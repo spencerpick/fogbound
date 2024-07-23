@@ -4109,33 +4109,9 @@ MonoBehaviour:
   assetGuid: 
   m_Mesh: {fileID: 0}
   m_IsSelectable: 1
-  m_SelectedFaces: 120000005800000056000000
-  m_SelectedEdges:
-  - a: 49
-    b: 50
-  - a: 50
-    b: 48
-  - a: 48
-    b: 51
-  - a: 51
-    b: 49
-  - a: 335
-    b: 336
-  - a: 336
-    b: 334
-  - a: 334
-    b: 337
-  - a: 337
-    b: 335
-  - a: 327
-    b: 328
-  - a: 328
-    b: 326
-  - a: 326
-    b: 329
-  - a: 329
-    b: 327
-  m_SelectedVertices: 300000003100000032000000330000004e0100004f010000500100005101000046010000470100004801000049010000
+  m_SelectedFaces: 
+  m_SelectedEdges: []
+  m_SelectedVertices: 
 --- !u!1 &742893244699615902
 GameObject:
   m_ObjectHideFlags: 0
@@ -4613,7 +4589,7 @@ Transform:
   m_GameObject: {fileID: 2209448413797065096}
   m_LocalRotation: {x: -0.000000021855694, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -2.7956142, y: -3.4119847, z: 5.414336}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0576, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 486738908245786349}
   m_RootOrder: 0
