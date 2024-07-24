@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 486738908243861079}
   - component: {fileID: 4454079705099420255}
   m_Layer: 0
-  m_Name: building01
+  m_Name: house01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4588,7 +4588,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2209448413797065096}
   m_LocalRotation: {x: -0.000000021855694, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.7956142, y: -3.4119847, z: 5.414336}
+  m_LocalPosition: {x: -2.83, y: -3.4119847, z: 5.414336}
   m_LocalScale: {x: 1.0576, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 486738908245786349}
