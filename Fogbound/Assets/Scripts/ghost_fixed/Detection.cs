@@ -3,24 +3,25 @@
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class Detection : MonoBehaviour
 {
-    public float detectionRadius = 5f;       // Radius within which to detect the player
-    public Color defaultColor = Color.white; // Default color of the arc
-    public Color proximityColor = Color.red; // Color of the arc when the player is detected
-    public int arcResolution = 50;           // Number of segments in the arc
-    public float detectionAngle = 60f;       // Angle of the detection arc
+    public float detectionRadius = 3f;        // Radius within which to detect the player
+    public Color defaultColor = Color.white;  // Default color of the arc
+    public Color proximityColor = Color.red;  // Color of the arc when the player is detected
+    public int arcResolution = 50;            // Number of segments in the arc
+    public float detectionAngle = 120f;       // Angle of the detection arc
 
-    private Mesh mesh;                       // Mesh for the arc
-    private Transform playerTransform;       // Reference to the player's Transform
-    private MeshRenderer meshRenderer;       // Renderer to control the color of the arc
+    private float innerRadius = 0.75f;        // Inner radius for the arc
+
+    private Mesh mesh;
+    private Transform playerTransform;
+    private MeshRenderer meshRenderer;
 
     void Start()
     {
-        // Get the MeshFilter and MeshRenderer components
         MeshFilter meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
 
         // Create a new mesh and assign it to the MeshFilter
-        mesh = new Mesh();
+        mesh = new Mesh { name = "DetectionArc" };
         meshFilter.mesh = mesh;
 
         // Find the player by tag
@@ -32,6 +33,8 @@ public class Detection : MonoBehaviour
         else
         {
             Debug.LogError("Player GameObject with tag 'Player' not found in the scene.");
+            enabled = false; // Disable script if player not found
+            return;
         }
 
         // Draw the detection arc initially with the default color
@@ -40,26 +43,24 @@ public class Detection : MonoBehaviour
 
     void Update()
     {
+        if (playerTransform == null) return;
+
         Vector3 directionToPlayer = playerTransform.position - transform.position;
         directionToPlayer.y = 0; // Ignore vertical differences
 
         float distance = directionToPlayer.magnitude;
-        if (distance <= detectionRadius*2)
+        if (distance <= detectionRadius * 2)
         {
-            // Calculate the angle between the forward direction of the enemy and the direction to the player
+            // Calculate the angle between the forward direction of the NPC and the direction to the player
             float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
-            Debug.Log("Angle to player: " + angleToPlayer);
 
             // Check if the player is within the defined detection angle
             if (angleToPlayer <= detectionAngle / 2f) // Use half of the detection angle
             {
-                Debug.Log("Player is within detection radius and within the detection arc.");
                 DrawArc(proximityColor);
             }
             else
             {
-                Debug.Log("Player is within detection radius but not within the detection arc.");
-                Debug.Log("Angle to player: " + angleToPlayer);
                 DrawArc(defaultColor);
             }
         }
@@ -74,8 +75,9 @@ public class Detection : MonoBehaviour
         meshRenderer.material.color = arcColor;
 
         // Create the vertices for the arc
-        Vector3[] vertices = new Vector3[arcResolution + 2];
-        vertices[0] = Vector3.zero; // Center of the arc
+        int vertexCount = (arcResolution + 1) * 2; // Two vertices for each arc point (inner and outer)
+        Vector3[] vertices = new Vector3[vertexCount];
+        int[] triangles = new int[arcResolution * 6]; // Two triangles per segment
 
         float halfAngle = detectionAngle / 2f;
         float angleStep = detectionAngle / arcResolution;
@@ -85,19 +87,25 @@ public class Detection : MonoBehaviour
             float currentAngle = -halfAngle + i * angleStep;
             float rad = Mathf.Deg2Rad * currentAngle;
 
-            float x = Mathf.Sin(rad) * detectionRadius;
-            float z = Mathf.Cos(rad) * detectionRadius;
+            float outerX = Mathf.Sin(rad) * detectionRadius;
+            float outerZ = Mathf.Cos(rad) * detectionRadius;
+            float innerX = Mathf.Sin(rad) * innerRadius;
+            float innerZ = Mathf.Cos(rad) * innerRadius;
 
-            vertices[i + 1] = new Vector3(x, 0f, z);
+            vertices[i * 2] = new Vector3(innerX, 0f, innerZ); // Inner arc vertex
+            vertices[i * 2 + 1] = new Vector3(outerX, 0f, outerZ); // Outer arc vertex
         }
 
-        // Create the triangles for the arc
-        int[] triangles = new int[arcResolution * 3];
         for (int i = 0; i < arcResolution; i++)
         {
-            triangles[i * 3] = 0;            // Center vertex
-            triangles[i * 3 + 1] = i + 1;    // Current vertex
-            triangles[i * 3 + 2] = i + 2;    // Next vertex
+            int startIndex = i * 2;
+            triangles[i * 6] = startIndex;
+            triangles[i * 6 + 1] = startIndex + 1;
+            triangles[i * 6 + 2] = startIndex + 2;
+
+            triangles[i * 6 + 3] = startIndex + 1;
+            triangles[i * 6 + 4] = startIndex + 3;
+            triangles[i * 6 + 5] = startIndex + 2;
         }
 
         // Create the mesh
