@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
+using UnityEngine.AI; // Required for NavMeshAgent
 
 public class GhostFollowPlayer : MonoBehaviour
 {
@@ -11,26 +10,23 @@ public class GhostFollowPlayer : MonoBehaviour
     public float stopDistance = 1.5f;
     public float stunDuration = 3f; // Duration of the stun
 
-    private Rigidbody rb;
+    private NavMeshAgent agent;
     private bool isStunned = false;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        // Get the NavMeshAgent component
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = speed; // Set the speed of the NavMeshAgent
+        agent.stoppingDistance = stopDistance; // Set the stopping distance
     }
 
-    void FixedUpdate()
+    void Update()
     {
         if (!isStunned)
         {
-            Vector3 direction = (player.position - transform.position).normalized;
-            float distance = Vector3.Distance(transform.position, player.position);
-
-            if (distance > stopDistance)
-            {
-                Vector3 moveVector = direction * speed * Time.fixedDeltaTime;
-                rb.MovePosition(rb.position + moveVector);
-            }
+            // Set the player's position as the destination for the NavMeshAgent
+            agent.SetDestination(player.position);
         }
     }
 
@@ -49,8 +45,9 @@ public class GhostFollowPlayer : MonoBehaviour
     private IEnumerator StunEnemy()
     {
         isStunned = true;
+        agent.isStopped = true; // Stop the NavMeshAgent from moving
         yield return new WaitForSeconds(stunDuration);
+        agent.isStopped = false; // Resume movement after the stun duration
         isStunned = false;
     }
 }
-
