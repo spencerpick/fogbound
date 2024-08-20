@@ -4,11 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-<<<<<<< HEAD
-  - Flashlight
-=======
   - Interactive
->>>>>>> main
+  - Flashlight
+  - PickupItem
   layers:
   - Default
   - TransparentFX
