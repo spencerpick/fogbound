@@ -117,8 +117,11 @@ public class InteractiveObjectManager : MonoBehaviour
 
     private void HandleTriggerEnter(Collider other)
     {
-        canRelease = false;
-        SetMaterialTransparency(0.5f, Color.red);
+        if (other.name != "Flashlight")
+        {
+            canRelease = false;
+            SetMaterialTransparency(0.5f, Color.red);
+        }
     }
 
     private void HandleTriggerExit(Collider other)
