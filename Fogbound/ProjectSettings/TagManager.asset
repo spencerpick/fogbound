@@ -4,11 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-<<<<<<< HEAD
   - Flashlight
-=======
   - Interactive
->>>>>>> main
   layers:
   - Default
   - TransparentFX
@@ -18,8 +15,8 @@ TagManager:
   - UI
   - 
   - 
-  - Cloud
-  - PostProcessing
+  - 
+  - 
   - 
   - 
   - 
