@@ -4,9 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Interactive
   - Flashlight
-  - PickupItem
+  - Interactive
   layers:
   - Default
   - TransparentFX
@@ -16,8 +15,8 @@ TagManager:
   - UI
   - 
   - 
-  - Cloud
-  - PostProcessing
+  - 
+  - 
   - 
   - 
   - 
