@@ -26,7 +26,7 @@ public class InteractiveObjectManager : MonoBehaviour
 
     private FixedJoint joint;
 
-    private readonly float RayCastDelay = 0.1f;
+    private readonly float RayCastDelay = 0.2f;
     private readonly float RayCastDistance = 7;
 
     private Vector3 startingCursorScale = Vector3.zero;
@@ -99,7 +99,7 @@ public class InteractiveObjectManager : MonoBehaviour
             ReleaseObject();
         }
 
-        if (Input.GetKeyDown(interactKey))
+        if (Input.GetKeyDown(interactKey) && pickupableItem != null)
         {
             PickupItem(pickupableItem);
             keyDisplay.SetActive(false);
