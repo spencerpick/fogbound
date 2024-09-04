@@ -10,6 +10,12 @@ public class FlashlightController : MonoBehaviour
     private bool isUVMode = false; // Keep track of whether we are in UV mode
     private bool uvModeExhausted = false; // Track if UV mode is exhausted
 
+    // Public property to check if UV mode is active
+    public bool IsUVModeActive
+    {
+        get { return isUVMode && !uvModeExhausted; } // Return true only if UV mode is on and not exhausted
+    }
+
     // Default values for Natural Light and UV Light
     public float naturalLightIntensity = 5f;
     public Color naturalLightColor = Color.white;
@@ -24,6 +30,7 @@ public class FlashlightController : MonoBehaviour
 
     // Reference to the UI slider
     public Slider UVslider;
+
     void Start()
     {
         // Get the Light component
