@@ -6,14 +6,14 @@ using TMPro;
 public class QuestManager : MonoBehaviour
 {
 
-    public TextMeshProUGUI currentThought; // Reference to the text component to be stored in here
+    private TextMeshProUGUI currentThought; // Reference to the text component to be stored in here
     [SerializeField] private Light highlightLightPrefab; // Reference to the prefab of the highlight object to be stored in here
 
     private Dictionary<GameObject, Light> activeHighlights = new Dictionary<GameObject, Light>(); // Dictionary will store active highlights in it, i.e. objects currently highlighted (making it easy to remove them)
 
     void Start()
     {
-        /*if (currentThought == null)
+        if (currentThought == null)
         {
             Canvas canvas = FindObjectOfType<Canvas>();
             if (canvas != null)
@@ -22,8 +22,8 @@ public class QuestManager : MonoBehaviour
                 Debug.Log("Assigned currentThought: " + (currentThought != null ? "Success" : "Failed"));
             }
 
-        }*/
-        Debug.Log("Assigned currentThought: " + (currentThought != null ? "Success" : "Failed"));
+        }
+
     }
 
     void OnEnable()

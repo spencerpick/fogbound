@@ -22,11 +22,11 @@ public class InteractiveObjectManager : MonoBehaviour
     private Color materialColor;
 
     private Camera playerCamera;
-    public GameObject grabbedObject;
+    private GameObject grabbedObject;
 
     private FixedJoint joint;
 
-    private readonly float RayCastDelay = 0.2f;
+    private readonly float RayCastDelay = 0.1f;
     private readonly float RayCastDistance = 7;
 
     private Vector3 startingCursorScale = Vector3.zero;
@@ -79,68 +79,31 @@ public class InteractiveObjectManager : MonoBehaviour
         KeyText.text = interactKey.ToString();
     }
 
-    void OnEnable()
-    {
-        EventManager.OnToyPlacedOnPillar += HandleToyPlacedOnPillar;
-    }
-
-    void OnDisable()
-    {
-        EventManager.OnToyPlacedOnPillar -= HandleToyPlacedOnPillar;
-    }
-
-
     private void Update()
     {
         if (Input.GetMouseButtonDown(0)) // Mouse pressed
         {
-            //    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit hit, RayCastDistance))
-            RaycastHit[] hits = Physics.RaycastAll(playerCamera.transform.position, playerCamera.transform.forward, RayCastDistance);
-            foreach (var hit in hits)
+            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit hit, RayCastDistance))
             {
-                
+                if (hit.collider.CompareTag("Interactive") && grabbedObject == null)
                 {
-                    if (hit.collider.CompareTag("Interactive") && grabbedObject == null)
-                    {
-                        grabbedObject = hit.collider.gameObject;
-                        Debug.Log("RAY CAST HIT: " + hit.collider.gameObject);
-
-                        Rigidbody rb = grabbedObject.GetComponent<Rigidbody>();
-
-                        if (rb != null)
-                        {
-                              Debug.Log("KINEMATIC CURRENTLY: " + rb.isKinematic);
-                              rb.isKinematic = false;
-                              Debug.Log("KINEMATIC SETTING TO: " + rb.isKinematic);
-                              AttachObject(playerRigidbody);
-                            break;
-                        }
-
-                    }
+                    grabbedObject = hit.collider.gameObject;
+                    AttachObject(playerRigidbody);
                 }
             }
         }
 
         // Release the object on mouse release
         if (Input.GetMouseButtonUp(0))
-            {
-                ReleaseObject();
-            }
+        {
+            ReleaseObject();
+        }
 
-<<<<<<< Updated upstream
-        if (Input.GetKeyDown(interactKey) && pickupableItem != null)
+        if (Input.GetKeyDown(interactKey))
         {
             PickupItem(pickupableItem);
             keyDisplay.SetActive(false);
         }
-=======
-            if (Input.GetKeyDown(interactKey))
-            {
-                PickupItem(pickupableItem);
-                keyDisplay.SetActive(false);
-            }
-        
->>>>>>> Stashed changes
     }
 
     private void AttachObject(Rigidbody rb)
@@ -337,10 +300,5 @@ public class InteractiveObjectManager : MonoBehaviour
 
         itemList.Add(newIcon);
         GameObject.Destroy(item);
-    }
-
-    private void HandleToyPlacedOnPillar(GameObject toyObject, int pillarNumber)
-    {
-        ReleaseObject();
     }
 }
