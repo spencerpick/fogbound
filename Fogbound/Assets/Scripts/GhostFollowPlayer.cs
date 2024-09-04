@@ -25,10 +25,14 @@ public class GhostFollowPlayer : MonoBehaviour
     {
         if (!isStunned)
         {
-            // Set the player's position as the destination for the NavMeshAgent
-            agent.SetDestination(player.position);
+            if (player != null)
+            {
+                agent.SetDestination(player.position);
+                Debug.Log("Setting destination to player at position: " + player.position);
+            }
         }
     }
+
 
     private void OnTriggerStay(Collider other)
     {
@@ -46,8 +50,11 @@ public class GhostFollowPlayer : MonoBehaviour
     {
         isStunned = true;
         agent.isStopped = true; // Stop the NavMeshAgent from moving
+        Debug.Log("Enemy stunned, stopping NavMeshAgent.");
         yield return new WaitForSeconds(stunDuration);
         agent.isStopped = false; // Resume movement after the stun duration
         isStunned = false;
+        Debug.Log("Enemy no longer stunned, resuming NavMeshAgent.");
     }
+
 }
