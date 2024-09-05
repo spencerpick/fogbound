@@ -3,7 +3,15 @@ guid: e6bda001f90ce0043992af4a0348545e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cursorImage: {instanceID: 0}
+  - playerRigidbody: {instanceID: 0}
+  - keyDisplay: {fileID: 740103732133050138, guid: b2098ac4e6ad2d44db03802b44ef3436,
+      type: 3}
+  - iconList: {fileID: 740103732133050138, guid: b2098ac4e6ad2d44db03802b44ef3436,
+      type: 3}
+  - iconPrefab: {instanceID: 0}
+  - KeyText: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
