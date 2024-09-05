@@ -87,6 +87,14 @@ public class InteractiveObjectManager : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Interactive") && grabbedObject == null)
                 {
+                    int objectLayer = hit.collider.gameObject.layer;
+                    
+                    if(objectLayer == LayerMask.NameToLayer("Toy"))
+                    {
+                       // grabbedObject.transform.rotation = Quaternion.identity;
+                       
+                    }
+
                     grabbedObject = hit.collider.gameObject;
                     AttachObject(playerRigidbody);
                 }

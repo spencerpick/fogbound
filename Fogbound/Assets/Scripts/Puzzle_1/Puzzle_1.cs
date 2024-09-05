@@ -29,7 +29,7 @@ public class Puzzle_1 : MonoBehaviour
     {
         if (CompletePuzzle == true)
         {
-            PuzzleSolved();
+
         }
     }
 
@@ -63,7 +63,7 @@ public class Puzzle_1 : MonoBehaviour
         return -1; // Return -1 to indicate an error if the toy wasn't found
     }
 
-    private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy into position so it is placed on the pillar nicely and stays there unless deliberately moved
+    private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy into position so it is placed on the pillar nicely a
     {
         GameObject pillar = GameObject.Find("Pillar_" + pillarNumber); // Find the pillar object based on its associated number
 
@@ -72,13 +72,6 @@ public class Puzzle_1 : MonoBehaviour
             // Snap the toy to the top of the pillar
             toy.transform.position = pillar.transform.position + new Vector3(0, 1.5f, 0); // Set y position
             toy.transform.rotation = Quaternion.Euler(0, 90, 0);
-
-            // Ensure the toy stays still
-            Rigidbody rb = toy.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.isKinematic = true; // Disable physics to keep the toy still
-            }
 
         }
     }
@@ -94,11 +87,45 @@ public class Puzzle_1 : MonoBehaviour
       //  }
     }
 
-
-    void PuzzleSolved()
+    public bool IsToyOnCorrectPillar(GameObject toy, int pillarNumber)
     {
-        EventManager.TriggerPuzzle_1_DoorOpen(); // Trigger the door open event
-        EventManager.TriggerThoughtUpdate("Hello this is a testttt");
-       // EventManager.TriggerHighlightObject(objectToHighlight, 3f, 5f, false, 1.3f);
+        string toyName = toy.name; // Get the toy's name
+        if (toyAssignments.TryGetValue(toyName, out int correctPillar))
+        {
+            return correctPillar == pillarNumber; // Returns true if on correct pillar
+        }
+        return false;
     }
-}
+
+    //public void CheckPuzzleCompletition()
+    //{
+    //    bool isComplete = true;
+
+    //    // Iterate through all toys and check if they're on the correct pillars
+    //    foreach (var toyAssignment in toyAssignments)
+    //    {
+    //        GameObject toy = GameObject.Find(toyAssignment.Key);
+    //        int correctPillar = toyAssignment.Value;
+
+    //        // Find the trigger/pillar the toy is on (you might need more specific checking logic here)
+    //       // PillarTrigger pillarTrigger = FindPillarTriggerForToy(toy); // Implement this method based on your setup
+
+    //        if (pillarTrigger == null || !IsToyOnCorrectPillar(toy, pillarTrigger.pillarNumber))
+    //        {
+    //            isComplete = false;
+    //            break;
+    //        }
+    //    }
+
+    //    if (isComplete)
+    //    {
+    //        Debug.Log("Puzzle complete!");
+    //        EventManager.TriggerPuzzle_1_DoorOpen(); // Trigger the door open event
+    //        EventManager.TriggerThoughtUpdate("Hello this is a testttt");
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("Puzzle not yet complete.");
+    //    }
+    }
+

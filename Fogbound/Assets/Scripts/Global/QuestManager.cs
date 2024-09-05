@@ -23,7 +23,7 @@ public class QuestManager : MonoBehaviour
             }
 
         }*/
-        Debug.Log("Assigned currentThought: " + (currentThought != null ? "Success" : "Failed"));
+       // Debug.Log("Assigned currentThought: " + (currentThought != null ? "Success" : "Failed"));
     }
 
     void OnEnable()
