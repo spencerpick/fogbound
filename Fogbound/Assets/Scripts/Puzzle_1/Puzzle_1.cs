@@ -8,10 +8,18 @@ public class Puzzle_1 : MonoBehaviour
     [SerializeField] bool CompletePuzzle = false; // Testing purposes
 
     private Dictionary<string, int> toyAssignments = new Dictionary<string, int>();
+    public Dictionary<int, string> currentToyPlacement = new Dictionary<int, string>();
+    private Dictionary<string, bool> toyPlacementStatus = new Dictionary<string, bool>();
 
     void Start()
     {
-        GiveToysRandomNumbers();
+        GiveToysRandomNumbers(); // Assign each toy a random number between 1 - 6
+
+        // Initalize all toy placement statuses to be be false as they are not correctly placed on pillars
+        foreach (var toy in toyAssignments.Keys)
+        {
+            toyPlacementStatus[toy] = false;
+        }
     }
 
     void OnEnable()
@@ -78,54 +86,149 @@ public class Puzzle_1 : MonoBehaviour
 
     private void HandleToyPlacedOnPillar(GameObject toy, int pillarNumber)
     {
-        string toyName = toy.name; // Get the name of the toy object (e.g., "Bear")
-        int assignedNumber = GetAssignedNumber(toyName); // Use toyname to retrieve which pillar it is associated with and thus needs to be placed on
+        string toyName = toy.name;
+        int assignedNumber = GetAssignedNumber(toyName);
 
-       // if(assignedNumber == pillarNumber)
-      //  {
-            SnapToyToPillar(toy, pillarNumber);
-      //  }
+        // Remove toy from its previous pillar if already placed elsewhere
+        if (currentToyPlacement.ContainsValue(toyName))
+        {
+            int previousPillar = -1;
+            foreach (var kvp in currentToyPlacement)
+            {
+                if (kvp.Value == toyName && kvp.Key != pillarNumber)
+                {
+                    previousPillar = kvp.Key;
+                    Debug.Log($"{toyName} is already placed on pillar {previousPillar}. Removing it from there.");
+                    break;
+                }
+            }
+            if (previousPillar != -1)
+            {
+                currentToyPlacement.Remove(previousPillar);
+            }
+        }
+
+        // Remove any toy already on the current pillar
+        if (currentToyPlacement.ContainsKey(pillarNumber))
+        {
+            string existingToy = currentToyPlacement[pillarNumber];
+            Debug.Log($"Pillar {pillarNumber} already has {existingToy}. Removing it.");
+            toyPlacementStatus[existingToy] = false;  // Mark the previous toy as not placed correctly
+            currentToyPlacement.Remove(pillarNumber);
+        }
+
+        // Snap the toy to the pillar
+        SnapToyToPillar(toy, pillarNumber);
+
+        // Update currentToyPlacement
+        currentToyPlacement[pillarNumber] = toyName;
+
+        // Update toyPlacementStatus
+        if (assignedNumber == pillarNumber)
+        {
+            toyPlacementStatus[toyName] = true;
+            Debug.Log($"{toyName} placed correctly on pillar {pillarNumber}.");
+        }
+        else
+        {
+            toyPlacementStatus[toyName] = false;
+            Debug.Log($"{toyName} placed on the wrong pillar {pillarNumber}.");
+        }
+
+        // Check puzzle completion
+        CheckPuzzleCompletition();
+
+        // Log current placements for debugging
+        Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
     }
+
+
+
 
     public bool IsToyOnCorrectPillar(GameObject toy, int pillarNumber)
     {
         string toyName = toy.name; // Get the toy's name
+
         if (toyAssignments.TryGetValue(toyName, out int correctPillar))
         {
-            return correctPillar == pillarNumber; // Returns true if on correct pillar
+            bool isCorrectPlacement = correctPillar == pillarNumber; // Is toy on correct pillar?
+            toyPlacementStatus[toyName] = isCorrectPlacement; // Update status of whether it is on correct pillar or not
+            return isCorrectPlacement; // Return true if on correct pillar
+
         }
         return false;
     }
 
-    //public void CheckPuzzleCompletition()
-    //{
-    //    bool isComplete = true;
+    public void RemoveToyFromPillar(int pillarNumber, string toyName)
+    {
+        if (currentToyPlacement.ContainsKey(pillarNumber))
+        {
+            currentToyPlacement.Remove(pillarNumber);
+            Debug.Log($"Removed {toyName} from pillar {pillarNumber}.");
 
-    //    // Iterate through all toys and check if they're on the correct pillars
-    //    foreach (var toyAssignment in toyAssignments)
-    //    {
-    //        GameObject toy = GameObject.Find(toyAssignment.Key);
-    //        int correctPillar = toyAssignment.Value;
+            // Update toyPlacementStatus
+            toyPlacementStatus[toyName] = false;
 
-    //        // Find the trigger/pillar the toy is on (you might need more specific checking logic here)
-    //       // PillarTrigger pillarTrigger = FindPillarTriggerForToy(toy); // Implement this method based on your setup
+            // Check puzzle completion again
+            CheckPuzzleCompletition();
 
-    //        if (pillarTrigger == null || !IsToyOnCorrectPillar(toy, pillarTrigger.pillarNumber))
-    //        {
-    //            isComplete = false;
-    //            break;
-    //        }
-    //    }
-
-    //    if (isComplete)
-    //    {
-    //        Debug.Log("Puzzle complete!");
-    //        EventManager.TriggerPuzzle_1_DoorOpen(); // Trigger the door open event
-    //        EventManager.TriggerThoughtUpdate("Hello this is a testttt");
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Puzzle not yet complete.");
-    //    }
+            // Log current placements for debugging
+            Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
+        }
     }
+
+    private string GetCurrentPlacementsString()
+    {
+        List<string> placements = new List<string>();
+        foreach (var kvp in currentToyPlacement)
+        {
+            placements.Add($"Pillar {kvp.Key}: {kvp.Value}");
+        }
+        return string.Join(", ", placements);
+    }
+
+    public void CheckPuzzleCompletition()
+    {
+        bool isComplete = true;
+
+        // Ensure all toys are placed correctly on their respective pillars
+        foreach (var toyStatus in toyPlacementStatus.Values)
+        {
+            if (!toyStatus)
+            {
+                isComplete = false;
+                Debug.Log("Not all toys are placed correctly.");
+                break;
+            }
+        }
+
+        // Ensure all pillars have toys placed on them
+        if (currentToyPlacement.Count != toyAssignments.Count)
+        {
+            isComplete = false;
+            Debug.Log($"Not all pillars have toys placed. {currentToyPlacement.Count}/{toyAssignments.Count} pillars filled.");
+        }
+
+        // If everything is correct, mark the puzzle as complete
+        if (isComplete)
+        {
+            Debug.Log("Puzzle complete!");
+            EventManager.TriggerPuzzle_1_DoorOpen();
+            EventManager.TriggerThoughtUpdate("PUZZLE COMPLETED HELL YEAH");
+        }
+        else
+        {
+            Debug.Log("Puzzle not yet complete.");
+        }
+
+        // Log current placements for debugging
+        Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
+    }
+
+
+
+
+
+
+}
 
