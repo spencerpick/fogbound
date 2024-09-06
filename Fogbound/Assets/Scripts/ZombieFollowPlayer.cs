@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+
 public class ZombieFollowPlayer : MonoBehaviour
 {
     public Transform player; // Reference to the player
@@ -17,6 +18,8 @@ public class ZombieFollowPlayer : MonoBehaviour
 
     void Start()
     {
+
+
         // Get the Animator component
         animator = GetComponent<Animator>();
 
