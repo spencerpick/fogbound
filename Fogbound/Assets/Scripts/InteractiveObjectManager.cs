@@ -98,6 +98,22 @@ public class InteractiveObjectManager : MonoBehaviour
                     grabbedObject = hit.collider.gameObject;
                     AttachObject(playerRigidbody);
                 }
+
+                if (hit.collider.CompareTag("RotationSegment"))
+                {
+
+                    // Flip the segment
+                    PuzzlePillar pillar = hit.collider.gameObject.GetComponentInParent<PuzzlePillar>();
+                    pillar.FlipSegment(hit.collider.gameObject.GetComponent<RotationSegment>().segmentId);
+
+                    // Check puzzle 2
+                    Puzzle_2 puzzle_2 = pillar.GetComponentInParent<Puzzle_2>();
+                    puzzle_2.Puzzle2Solved = puzzle_2.PuzzleCheck();
+                    if (puzzle_2.Puzzle2Solved)
+                    {
+                        Debug.Log(puzzle_2.Puzzle2Solved);
+                    }
+                }
             }
         }
 
@@ -233,7 +249,7 @@ public class InteractiveObjectManager : MonoBehaviour
 
     void PerformRaycast()
     {
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit hit, RayCastDistance))
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit hit, RayCastDistance, LayerMask.GetMask("Default")))
         {
             if (hit.collider.CompareTag("PickupItem"))
             {
@@ -246,7 +262,7 @@ public class InteractiveObjectManager : MonoBehaviour
                 keyDisplay.SetActive(false);
             }
 
-            if (!hit.collider.CompareTag("Interactive") && !hit.collider.CompareTag("PickupItem"))
+            if (!hit.collider.CompareTag("Interactive") && !hit.collider.CompareTag("PickupItem") && !hit.collider.CompareTag("RotationSegment"))
             {
                 isInteractiveInView = false;
                 return;
