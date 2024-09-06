@@ -62,11 +62,11 @@ public class ZombieFollowPlayer : MonoBehaviour
 
             // Check if the player is within attack range
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            Debug.Log("Distance to player: " + distanceToPlayer);  // Log distance to player
+            // Debug.Log("Distance to player: " + distanceToPlayer);  // Log distance to player
 
             if (distanceToPlayer <= attackRange)
             {
-                Debug.Log("Zombie is within attack range!");
+                // Debug.Log("Zombie is within attack range!");
                 TryAttackPlayer();
             }
 
@@ -105,7 +105,7 @@ public class ZombieFollowPlayer : MonoBehaviour
     {
         if (other.CompareTag("Flashlight"))
         {
-            Debug.Log("Flashlight hit the zombie!");
+            //Debug.Log("Flashlight hit the zombie!");
             FlashlightController flashlightController = other.GetComponent<FlashlightController>();
 
             if (flashlightController != null && flashlightController.IsUVModeActive)
