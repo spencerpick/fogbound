@@ -6,6 +6,8 @@ public class Puzzle_1 : MonoBehaviour
 {
 
     [SerializeField] bool CompletePuzzle = false; // Testing purposes
+    [SerializeField] private Transform[] spawnPoints; 
+    [SerializeField] private GameObject[] toyPrefabs;
 
     private Dictionary<string, int> toyAssignments = new Dictionary<string, int>();
     public Dictionary<int, string> currentToyPlacement = new Dictionary<int, string>();
@@ -14,6 +16,7 @@ public class Puzzle_1 : MonoBehaviour
     void Start()
     {
         GiveToysRandomNumbers(); // Assign each toy a random number between 1 - 6
+        SpawnToys();
 
         // Initalize all toy placement statuses to be be false as they are not correctly placed on pillars
         foreach (var toy in toyAssignments.Keys)
@@ -71,7 +74,45 @@ public class Puzzle_1 : MonoBehaviour
         return -1; // Return -1 to indicate an error if the toy wasn't found
     }
 
-    private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy into position so it is placed on the pillar nicely a
+    private void SpawnToys() // Spawn toys at the corresponding spawn points
+    {
+        foreach (var toyAssignment in toyAssignments)
+        {
+            string toyName = toyAssignment.Key;
+            int assignedPillar = toyAssignment.Value;
+
+            // Find the toy prefab that corresponds to the toyName
+            GameObject toyPrefab = GetToyPrefabByName(toyName);
+
+            if (toyPrefab != null && assignedPillar >= 1 && assignedPillar <= 6)
+            {
+                // Spawn the toy at the corresponding spawn point based on the assigned pillar
+                Transform spawnPoint = spawnPoints[assignedPillar - 1];
+                Instantiate(toyPrefab, spawnPoint.position, spawnPoint.rotation);
+
+                Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to spawn {toyName} at spawn point {assignedPillar}");
+            }
+        }
+    }
+
+    private GameObject GetToyPrefabByName(string toyName)
+    {
+        foreach (var toyPrefab in toyPrefabs)
+        {
+            if (toyPrefab.name == toyName)
+            {
+                return toyPrefab;
+            }
+        }
+        return null;
+    }
+
+
+private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy into position so it is placed on the pillar nicely a
     {
         GameObject pillar = GameObject.Find("Pillar_" + pillarNumber); // Find the pillar object based on its associated number
 
