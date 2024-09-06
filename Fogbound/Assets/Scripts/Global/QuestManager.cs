@@ -19,10 +19,25 @@ public class QuestManager : MonoBehaviour
 
     void Start()
     {
-
+ 
         // TODO Add guiding thoughts here
-        Thoughts.Add("Hmm, I should find the orphanage.");
-        Thoughts.Add("");
+        Thoughts.Add("The orphanage. It all started here. There has to be something inside that will tell me what happened… and why.");
+
+        Thoughts.Add("These pillars… six of them, and they’re missing something.");
+        Thoughts.Add("A toy! I bet these toys are scattered throughout the orphanage.");
+        Thoughts.Add("Keep an eye out, any room could hold one of them.");
+        Thoughts.Add("I’ve got all the toys. Time to place them on the pillars. There has to be a right order.");
+        Thoughts.Add("Let’s hope I’ve got the right combination. The wrong one might not end well.");
+        Thoughts.Add("The pillars accepted the toys. Something shifted… I’m closer to understanding this place. But what else is lurking here?");
+
+        Thoughts.Add("Looks like I’m not getting that 'itemname' unless I climb. These boxes should do the trick.");
+        Thoughts.Add("I’m getting closer. The fog seems… angrier. Almost like it doesn’t want me to know the truth.");
+
+        Thoughts.Add("Four towers… three switches on each. Something tells me this is more than just a guessing game.");
+        Thoughts.Add("These switches move up and down. Random… or is there a hidden clue somewhere in this place?");
+        Thoughts.Add("Might take a few tries to get this right. Each tower affects the others. Patience.");
+        Thoughts.Add("There, that did it. The switches are aligned.");
+
     }
 
     void OnEnable()
