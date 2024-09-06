@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // UI
 
@@ -7,19 +6,15 @@ public class FlashlightController : MonoBehaviour
 {
     public KeyCode flashlightKey = KeyCode.F; // The key to toggle the flashlight
     private Light flashlight;
-    private bool isUVMode = false; // Keep track of whether we are in UV mode
+    private enum FlashlightMode { Off, On, UV }
+    private FlashlightMode currentMode = FlashlightMode.On; // Start in normal light mode
+
     private bool uvModeExhausted = false; // Track if UV mode is exhausted
 
-    // Public property to check if UV mode is active
-    public bool IsUVModeActive
-    {
-        get { return isUVMode && !uvModeExhausted; } // Return true only if UV mode is on and not exhausted
-    }
-
-    // Default values for Natural Light and UV Light
-    public float naturalLightIntensity = 5f;
-    public Color naturalLightColor = Color.white;
-    public float naturalLightRange = 20f; // Default longer range for the normal spotlight
+    // Default values for Normal Light and UV Light
+    public float normalLightIntensity = 5f;
+    public Color normalLightColor = Color.white;
+    public float normalLightRange = 20f; // Longer range for the normal spotlight
 
     public float uvLightIntensity = 2f;
     public Color uvLightColor = new Color(0.5f, 0f, 1f); // Purple for UV
@@ -31,60 +26,50 @@ public class FlashlightController : MonoBehaviour
     // Reference to the UI slider
     public Slider UVslider;
 
+    // Public property to check if UV mode is active
+    public bool IsUVModeActive
+    {
+        get { return currentMode == FlashlightMode.UV && !uvModeExhausted; }
+    }
+
     void Start()
     {
         // Get the Light component
         flashlight = GetComponent<Light>();
 
-        // Set the light to always be on with the natural light settings
-        flashlight.enabled = true;
-        SetNaturalLightMode();
+        // Set the light to start in the On mode
+        SetNormalLightMode();
 
-        // Initialize the UV slider
+        // Initialize the UV slider if used
         if (UVslider != null)
         {
-            UVslider.maxValue = maxUVTime; // Set the max value of the slider to maxUVTime
-            UVslider.value = maxUVTime;    // Set the initial value to the max
+            UVslider.maxValue = maxUVTime;
+            UVslider.value = maxUVTime; // Set initial value to max
         }
     }
 
     void Update()
     {
-        // Only allow switching if UV mode is not exhausted
-        if (Input.GetKeyDown(flashlightKey) && !uvModeExhausted)
+        // Toggle between modes when the key is pressed
+        if (Input.GetKeyDown(flashlightKey))
         {
-            // Toggle between UV and Natural light modes
-            isUVMode = !isUVMode;
-
-            if (isUVMode && currentUVTime < maxUVTime)
-            {
-                SetUVLightMode();
-            }
-            else
-            {
-                SetNaturalLightMode();
-            }
+            ToggleFlashlightMode();
         }
 
-        // Decrement UV time if UV mode is active
-        if (isUVMode)
+        // Handle UV mode depletion
+        if (currentMode == FlashlightMode.UV)
         {
             currentUVTime += Time.deltaTime;
 
-            // Update the slider to reflect the remaining UV time
             if (UVslider != null)
             {
                 UVslider.value = maxUVTime - currentUVTime;
             }
 
-            // Check if we've exhausted UV time
             if (currentUVTime >= maxUVTime)
             {
-                uvModeExhausted = true; // Set the flag to disable UV mode
-                SetNaturalLightMode(); // Automatically switch back to natural light
-                Debug.Log("UV mode exhausted!");
-
-                // Set the slider to 0
+                uvModeExhausted = true;
+                SetNormalLightMode();
                 if (UVslider != null)
                 {
                     UVslider.value = 0;
@@ -93,22 +78,59 @@ public class FlashlightController : MonoBehaviour
         }
     }
 
-    // Set the flashlight to Natural Light mode
-    void SetNaturalLightMode()
+    // Method to toggle between Off, On, and UV modes
+    void ToggleFlashlightMode()
     {
-        flashlight.intensity = naturalLightIntensity;
-        flashlight.color = naturalLightColor;
-        flashlight.range = naturalLightRange; // Set the range for normal light
-        isUVMode = false; // Ensure that UV mode is turned off
-        Debug.Log("Flashlight set to Natural Light Mode");
+        switch (currentMode)
+        {
+            case FlashlightMode.Off:
+                SetNormalLightMode(); // Switch to Normal Light
+                break;
+
+            case FlashlightMode.On:
+                if (!uvModeExhausted)
+                {
+                    SetUVLightMode(); // Switch to UV Light
+                }
+                else
+                {
+                    SetOffMode(); // UV is exhausted, turn flashlight off
+                }
+                break;
+
+            case FlashlightMode.UV:
+                SetOffMode(); // Switch to Off
+                break;
+        }
+    }
+
+    // Set the flashlight to Normal Light mode
+    void SetNormalLightMode()
+    {
+        currentMode = FlashlightMode.On;
+        flashlight.enabled = true;
+        flashlight.intensity = normalLightIntensity;
+        flashlight.color = normalLightColor;
+        flashlight.range = normalLightRange;
+        Debug.Log("Flashlight set to Normal Light Mode");
     }
 
     // Set the flashlight to UV Light mode
     void SetUVLightMode()
     {
+        currentMode = FlashlightMode.UV;
+        flashlight.enabled = true;
         flashlight.intensity = uvLightIntensity;
         flashlight.color = uvLightColor;
-        flashlight.range = uvLightRange; // Set the shorter range for UV light
+        flashlight.range = uvLightRange;
         Debug.Log("Flashlight set to UV Light Mode");
+    }
+
+    // Turn the flashlight Off
+    void SetOffMode()
+    {
+        currentMode = FlashlightMode.Off;
+        flashlight.enabled = false;
+        Debug.Log("Flashlight is Off");
     }
 }
