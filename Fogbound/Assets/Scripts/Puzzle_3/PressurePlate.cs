@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PressurePlate : MonoBehaviour
@@ -7,24 +8,29 @@ public class PressurePlate : MonoBehaviour
     public bool isPressed;
     public GameObject plate;
 
-    public float resistancePressure;
+    public float desiredPressure;
     private float currentPressure;
     
     private Vector3 offset = new Vector3(0, 0.06f, 0);
     private Vector3 startingPos;
 
+    private TextMeshPro desiredPressureText;
+
     // Start is called before the first frame update
     void Start()
     {
         startingPos = plate.transform.localPosition;
+
+        desiredPressureText = GetComponentInChildren<TextMeshPro>();
+        desiredPressureText.text = desiredPressure.ToString();
     }
 
     // Update is called once per frame
     void Update()
     {
         // Animate if there is pressure
-        plate.transform.localPosition = (currentPressure > resistancePressure) ? offset : startingPos;
-        isPressed = currentPressure > resistancePressure;
+        plate.transform.localPosition = (currentPressure > 0) ? offset : startingPos;
+        isPressed = currentPressure > 0;
     }
 
     private void OnTriggerEnter(Collider collider)
