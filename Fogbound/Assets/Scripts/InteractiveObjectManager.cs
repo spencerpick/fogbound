@@ -50,24 +50,7 @@ public class InteractiveObjectManager : MonoBehaviour
             // Loop through all triggerObjects
             foreach (GameObject triggerObject in InteractiveObjects)
             {
-                TriggerHandler triggerHandler = triggerObject.GetComponent<TriggerHandler>();
-
-                // Add a TriggerHandler if there isn't one already
-                if (triggerHandler == null)
-                {
-                    triggerHandler = triggerObject.AddComponent<TriggerHandler>();
-                }
-
-                triggerHandler.OnEnter += HandleTriggerEnter;
-                triggerHandler.OnExit += HandleTriggerExit;
-
-                Rigidbody rbody = triggerObject.GetComponent<Rigidbody>();
-
-                // Add a RigidBody is there isn't one already
-                if (rbody == null)
-                {
-                    rbody = triggerObject.AddComponent<Rigidbody>();
-                }
+                AddIntereactive(triggerObject);
             }
         }
 
@@ -130,6 +113,30 @@ public class InteractiveObjectManager : MonoBehaviour
             keyDisplay.SetActive(false);
         }
     }
+
+    public void AddIntereactive(GameObject triggerObject)
+    {
+        TriggerHandler triggerHandler = triggerObject.GetComponent<TriggerHandler>();
+
+        // Add a TriggerHandler if there isn't one already
+        if (triggerHandler == null)
+        {
+            triggerHandler = triggerObject.AddComponent<TriggerHandler>();
+        }
+
+        // Subscribe the provided actions to the OnEnter and OnExit events
+        triggerHandler.OnEnter += HandleTriggerEnter;
+        triggerHandler.OnExit += HandleTriggerExit;
+
+        Rigidbody rbody = triggerObject.GetComponent<Rigidbody>();
+
+        // Add a RigidBody if there isn't one already
+        if (rbody == null)
+        {
+            rbody = triggerObject.AddComponent<Rigidbody>();
+        }
+    }
+
 
     private void AttachObject(Rigidbody rb)
     {
@@ -299,7 +306,6 @@ public class InteractiveObjectManager : MonoBehaviour
             cursorImage.transform.localScale = startingCursorScale;
         }
     }
-
 
     void PickupItem(GameObject item)
     {
