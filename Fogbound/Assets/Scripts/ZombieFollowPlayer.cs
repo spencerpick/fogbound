@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-public class ZombieFollowPlayer : MonoBehaviour
+public class ZombieFollowNav : MonoBehaviour
 {
     public Transform player; // Reference to the player
     public float crawlSpeed = 1f; // Speed of the zombie crawl
