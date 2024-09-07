@@ -1353,10 +1353,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4952160007736899871}
   - component: {fileID: 4842251645479873316}
-  - component: {fileID: 4842251645479873317}
   - component: {fileID: 4842251645479873314}
   - component: {fileID: 4842251645479873318}
-  - component: {fileID: 4842251645479873315}
+  - component: {fileID: 4473789975902774962}
+  - component: {fileID: 1021539720518125637}
   m_Layer: 0
   m_Name: CrawlingNavMesh
   m_TagString: Untagged
@@ -1397,19 +1397,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!65 &4842251645479873317
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5760750326969656229}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.8059082, y: 0.76769614, z: 1.5037689}
-  m_Center: {x: -0.024459839, y: 0.21648633, z: -0.25188446}
 --- !u!136 &4842251645479873314
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1418,12 +1405,12 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5760750326969656229}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.4117087
   m_Height: 1.7464561
   m_Direction: 2
-  m_Center: {x: -0.013001641, y: 0.32, z: -0.27082634}
+  m_Center: {x: -0.013001641, y: 0.5, z: -0.27082634}
 --- !u!95 &4842251645479873318
 Animator:
   serializedVersion: 3
@@ -1443,25 +1430,45 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &4842251645479873315
+--- !u!114 &4473789975902774962
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5760750326969656229}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdc6daadf45020c4bad4c0bb9781f465, type: 3}
+  m_Script: {fileID: 11500000, guid: b02beb9e2670ef5499d7929ec6b1f6fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  crawlSpeed: 1
-  rotationSpeed: 2
-  stunDuration: 3
-  attackRange: 1.5
+  stunDuration: 5
+  attackRange: 3
   damageCooldown: 2
   playerLives: {fileID: 0}
+--- !u!195 &1021539720518125637
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5760750326969656229}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &5883481706232785177
 GameObject:
   m_ObjectHideFlags: 0
