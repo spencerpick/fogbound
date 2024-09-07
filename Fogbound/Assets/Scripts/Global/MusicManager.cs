@@ -30,6 +30,13 @@ public class MusicManager : MonoBehaviour
         {
             PlayNextTrack();
         }
+
+        if (Input.GetKeyDown(KeyCode.Asterisk) || Input.GetKeyDown(KeyCode.KeypadMultiply)) // For testing purposes, press * to listen to next track
+        {
+            Debug.Log("Skipping to the next track...");
+            PlayNextTrack();
+        }
+    
     }
 
     private void PlayNextTrack()
