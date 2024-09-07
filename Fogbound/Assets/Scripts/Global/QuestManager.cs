@@ -8,10 +8,12 @@ public class QuestManager : MonoBehaviour
 
     public TextMeshProUGUI currentThoughtText; // Reference to the text component to be stored in here
     [SerializeField] private Light highlightLightPrefab; // Reference to the prefab of the highlight object to be stored in here
+    [SerializeField] private GameObject player; // Reference to the player to be stored in here
 
 
     private List<string> QuestStages;
     private string currentQuestStage;
+    private int currentQuestNum = 0;
 
     private AudioSource audioSource; // Reference to the audio source
     private bool thoughtSoundPlayed = false;
@@ -22,6 +24,7 @@ public class QuestManager : MonoBehaviour
 
 
     /// Quest markers ///
+    [SerializeField] private GameObject First_Ghost_Marker;
     [SerializeField] private GameObject Orphanage_Entrance_Marker;
 
 
@@ -69,7 +72,7 @@ public class QuestManager : MonoBehaviour
     IEnumerator DelayQuestStart(float delayTime) // Coroutine to delay the quest start and avoid sound cutting off
     {
         yield return new WaitForSeconds(delayTime);
-        currentQuestStage = QuestStages[0]; 
+        currentQuestStage = QuestStages[currentQuestNum]; 
     }
 
     private void HandleQuestStage()
@@ -78,15 +81,23 @@ public class QuestManager : MonoBehaviour
         {
             if(!thoughtSoundPlayed)
             {
+                UpdateThought("My god, the rumours are true that's a ghost! How am I going to get past there is no other way?! Hmm what was that I heard about UV light stunning the paranormal? \n\n<b>PRESS x to change flashlight mode</b> ");
                 PlayThoughtSound("gasp");
                 thoughtSoundPlayed = true;
             }
-            UpdateThought("My god, the rumours are true that's a ghost! How am I going to get past there is no other way?! Hmm what was that I heard about UV light \n\n<b>PRESS x to change flashlight mode</b> ");
+            HandleHighlight(First_Ghost_Marker.gameObject, 6f, 5f, true, 1.31f);
+
+            if(CheckDistToMarker(First_Ghost_Marker))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = false;
+            }
         }
 
         if (currentQuestStage == "Find-Orphanage") // Quest stage 1
         {
-            UpdateThought("Hmm I think I should find the orphanage");
+            UpdateThought("I should conserve my UV power it won't last long.. I need to find Emily quick! I should start by finding the orphanage.");
             if (!thoughtSoundPlayed)
             {
                 PlayThoughtSound("thinking");
@@ -96,6 +107,18 @@ public class QuestManager : MonoBehaviour
         }
 
 
+    }
+
+    private bool CheckDistToMarker(GameObject marker)
+    {
+        float distance = Vector3.Distance(player.transform.position, marker.transform.position);
+
+        if (distance <= 5f)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void PlayThoughtSound(string soundType)
