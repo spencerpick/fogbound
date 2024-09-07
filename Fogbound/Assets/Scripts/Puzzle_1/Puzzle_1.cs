@@ -58,7 +58,7 @@ public class Puzzle_1 : MonoBehaviour
 
             toyAssignments[toyName] = assignedNumber; // Set the number to the current toy in the dictionary
 
-            Debug.Log($"{toyName} assigned to pillar {assignedNumber}");
+         //   Debug.Log($"{toyName} assigned to pillar {assignedNumber}");
 
         }
         
@@ -90,11 +90,11 @@ public class Puzzle_1 : MonoBehaviour
                 Transform spawnPoint = spawnPoints[assignedPillar - 1];
                 Instantiate(toyPrefab, spawnPoint.position, spawnPoint.rotation);
 
-                Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
+              //  Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
             }
             else
             {
-                Debug.LogError($"Failed to spawn {toyName} at spawn point {assignedPillar}");
+               // Debug.LogError($"Failed to spawn {toyName} at spawn point {assignedPillar}");
             }
         }
     }
@@ -180,7 +180,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         CheckPuzzleCompletition();
 
         // Log current placements for debugging
-        Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
+       // Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
     }
 
 
@@ -205,7 +205,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         if (currentToyPlacement.ContainsKey(pillarNumber))
         {
             currentToyPlacement.Remove(pillarNumber);
-            Debug.Log($"Removed {toyName} from pillar {pillarNumber}.");
+          //  Debug.Log($"Removed {toyName} from pillar {pillarNumber}.");
 
             // Update toyPlacementStatus
             toyPlacementStatus[toyName] = false;
@@ -214,7 +214,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
             CheckPuzzleCompletition();
 
             // Log current placements for debugging
-            Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
+         //   Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
         }
     }
 
@@ -247,23 +247,23 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         if (currentToyPlacement.Count != toyAssignments.Count)
         {
             isComplete = false;
-            Debug.Log($"Not all pillars have toys placed. {currentToyPlacement.Count}/{toyAssignments.Count} pillars filled.");
+           // Debug.Log($"Not all pillars have toys placed. {currentToyPlacement.Count}/{toyAssignments.Count} pillars filled.");
         }
 
         // If everything is correct, mark the puzzle as complete
         if (isComplete)
         {
-            Debug.Log("Puzzle complete!");
+          //  Debug.Log("Puzzle complete!");
             EventManager.TriggerPuzzle_1_DoorOpen();
             EventManager.TriggerThoughtUpdate("PUZZLE COMPLETED HELL YEAH");
         }
         else
         {
-            Debug.Log("Puzzle not yet complete.");
+         //   Debug.Log("Puzzle not yet complete.");
         }
 
         // Log current placements for debugging
-        Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
+       // Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
     }
 
 
