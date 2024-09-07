@@ -26,6 +26,11 @@ public class FlashlightController : MonoBehaviour
     // Reference to the UI slider
     public Slider UVslider;
 
+    // Audio components for click and UV mode sounds
+    public AudioClip clickSound;       // Sound for toggling the flashlight
+    public AudioClip uvModeSound;      // Sound for switching to UV mode
+    private AudioSource audioSource;   // The AudioSource to play the sounds
+
     // Public property to check if UV mode is active
     public bool IsUVModeActive
     {
@@ -36,6 +41,9 @@ public class FlashlightController : MonoBehaviour
     {
         // Get the Light component
         flashlight = GetComponent<Light>();
+
+        // Get the AudioSource component
+        audioSource = GetComponent<AudioSource>();
 
         // Set the light to start in the On mode
         SetNormalLightMode();
@@ -81,6 +89,9 @@ public class FlashlightController : MonoBehaviour
     // Method to toggle between Off, On, and UV modes
     void ToggleFlashlightMode()
     {
+        // Play click sound for all mode changes
+        PlayClickSound();
+
         switch (currentMode)
         {
             case FlashlightMode.Off:
@@ -123,6 +134,9 @@ public class FlashlightController : MonoBehaviour
         flashlight.intensity = uvLightIntensity;
         flashlight.color = uvLightColor;
         flashlight.range = uvLightRange;
+
+        // Play UV mode sound
+        PlayUVSound();
         Debug.Log("Flashlight set to UV Light Mode");
     }
 
@@ -132,5 +146,23 @@ public class FlashlightController : MonoBehaviour
         currentMode = FlashlightMode.Off;
         flashlight.enabled = false;
         Debug.Log("Flashlight is Off");
+    }
+
+    // Play the click sound when switching modes
+    void PlayClickSound()
+    {
+        if (clickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clickSound);
+        }
+    }
+
+    // Play the UV mode sound when switching to UV
+    void PlayUVSound()
+    {
+        if (uvModeSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(uvModeSound); // Play the UV sound once
+        }
     }
 }
