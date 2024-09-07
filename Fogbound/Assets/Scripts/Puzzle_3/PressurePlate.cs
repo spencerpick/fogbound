@@ -6,6 +6,7 @@ using UnityEngine;
 public class PressurePlate : MonoBehaviour
 {
     public bool isPressed;
+    public bool isSufficientlyPressed;
     public GameObject plate;
 
     public float desiredPressure;
@@ -31,6 +32,7 @@ public class PressurePlate : MonoBehaviour
         // Animate if there is pressure
         plate.transform.localPosition = (currentPressure > 0) ? offset : startingPos;
         isPressed = currentPressure > 0;
+        isSufficientlyPressed = currentPressure == desiredPressure;
     }
 
     private void OnTriggerEnter(Collider collider)
