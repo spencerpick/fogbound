@@ -29,6 +29,7 @@ public class QuestManager : MonoBehaviour
 
         QuestStages = new List<string>();
         // Initalise the different quest stages
+        QuestStages.Add("First-Ghost");
         QuestStages.Add("Find-Orphanage");
         QuestStages.Add("Look-Around-Orphanage");
         QuestStages.Add("Place-Toys");
@@ -39,7 +40,7 @@ public class QuestManager : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
         
-        StartCoroutine(DelayQuestStart(2f)); // Delay the initial quest stage update by 2 seconds to avoid sound cut-off
+        StartCoroutine(DelayQuestStart(0.5f)); // Delay the initial quest stage update by 2 seconds to avoid sound cut-off
 
 
     }

@@ -2,43 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
-using UnityEngine.SceneManagement;
 
 public class IntroManager : MonoBehaviour
 {
+    [SerializeField] VideoPlayer videoPlayer; // Reference to the VideoPlayer
+    [SerializeField] bool enableIntro = true; // Toggle for enabling or disabling the intro video
 
-    [SerializeField] VideoPlayer videoPlayer; 
-    [SerializeField] GameObject player;
-    [SerializeField] bool enableIntro;
+    // Manually add all scripts you want to disable until the video ends
+    [SerializeField] private List<MonoBehaviour> scriptsToDisable; // Drag and drop scripts in the Inspector
 
-    // Start is called before the first frame update
     void Start()
     {
-        if(enableIntro == true)
+        if (enableIntro)
         {
-            videoPlayer.loopPointReached +=  OnVideoEnd;
-            videoPlayer.Play();
-
-            // Disable the player movement and other components here
-            if (player != null)
-            {
-                player.GetComponent<PlayerMovement>().enabled = false;
-            }
-
+            DisableScripts(); // Disable all scripts at the start
+            videoPlayer.loopPointReached += OnVideoEnd;
+            videoPlayer.Play(); // Play the video
         }
         else
         {
-            return;
+            EnableScripts(); // If intro is disabled, enable all scripts immediately
         }
     }
 
-    
+    // Method to disable all specified scripts
+    private void DisableScripts()
+    {
+        foreach (MonoBehaviour script in scriptsToDisable)
+        {
+            if (script != null && script.enabled)
+            {
+                script.enabled = false;
+            }
+        }
+    }
+
+    // Method to enable all specified scripts
+    private void EnableScripts()
+    {
+        foreach (MonoBehaviour script in scriptsToDisable)
+        {
+            if (script != null)
+            {
+                script.enabled = true;
+            }
+        }
+    }
+
+    // Called when the video ends
     void OnVideoEnd(VideoPlayer vp)
     {
-        if(player != null)
-        {
-            player.GetComponent<PlayerMovement>().enabled = true;
-            videoPlayer.Stop();
-        }
+        EnableScripts(); // Enable all scripts when the video ends
+        videoPlayer.Stop(); // Stop the video
     }
 }
