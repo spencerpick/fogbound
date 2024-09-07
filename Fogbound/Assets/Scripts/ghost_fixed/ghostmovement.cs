@@ -6,6 +6,9 @@ public class ghostmovement : MonoBehaviour
     public float moveSpeed = 5f; // Speed of movement
     public float segmentLength = 10f; // Length of each segment
     public float followSpeed = 7f; // Speed of movement when following the player
+    private string audioClipPath = "Audios/ghostaudio"; // Path relative to the Resources folder
+    public float maxVolumeDistance = 5f; // Distance at which the sound will be loudest
+    public float minVolumeDistance = 20f; // Distance at which the sound will be quietest
 
     private Rigidbody rb;
     private Vector3 targetPosition;
@@ -13,8 +16,9 @@ public class ghostmovement : MonoBehaviour
     private bool isFollowingPlayer = false;
     private float initialHeight;
     private Vector3 startPosition;
-
+    private Renderer ghostRenderer;
     private bool isStopped = false; // To track if the ghost is stopped
+    private AudioSource ghostSound; // Dynamically created AudioSource
 
     void Start()
     {
@@ -24,7 +28,7 @@ public class ghostmovement : MonoBehaviour
 
         // Set the first target position within the square bounds
         SetRandomTargetPosition();
-
+        ghostRenderer = GetComponent<Renderer>();
         // Find the player by tag
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
@@ -35,10 +39,12 @@ public class ghostmovement : MonoBehaviour
         {
             Debug.LogError("Player GameObject with tag 'Player' not found in the scene.");
         }
+        SetupGhostAudio();
     }
 
     void Update()
     {
+        AdjustSoundVolume(); // Ensure this is continuously updating the volume
         if (isStopped)
         {
             return; // Do nothing if the ghost is stopped
@@ -136,6 +142,46 @@ public class ghostmovement : MonoBehaviour
         SetRandomTargetPosition();
     }
 
+    private void SetupGhostAudio()
+    {
+        // Load the audio clip from the Resources folder
+        AudioClip clip = Resources.Load<AudioClip>(audioClipPath);
+        if (clip == null)
+        {
+            Debug.LogError("AudioClip not found at path: " + audioClipPath);
+            return;
+        }
+
+        // Add AudioSource component to the ghost and configure it
+        ghostSound = gameObject.AddComponent<AudioSource>();
+        ghostSound.clip = clip;
+        ghostSound.loop = true; // Set to loop
+        ghostSound.playOnAwake = false; // Do not play on awake
+        ghostSound.spatialBlend = 1.0f; // Set to 3D sound
+        ghostSound.maxDistance = minVolumeDistance; // Set the max distance for sound attenuation
+        ghostSound.rolloffMode = AudioRolloffMode.Linear; // Linear falloff of sound
+    }
+
+    // Adjust the volume of the ghost sound based on the distance to the player
+    private void AdjustSoundVolume()
+    {
+        if (playerTransform != null && ghostSound != null)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+            // Calculate the volume based on the distance
+            float volume = Mathf.Clamp(1 - (distanceToPlayer - maxVolumeDistance) / (minVolumeDistance - maxVolumeDistance), 0, 1);
+
+            ghostSound.volume = volume;
+
+            // Play the sound if not already playing
+            if (!ghostSound.isPlaying)
+            {
+                ghostSound.Play();
+            }
+        }
+    }
+
     // Call this method from the Detection script
     public void SetFollowingPlayer(bool follow)
     {
@@ -161,14 +207,23 @@ public class ghostmovement : MonoBehaviour
         moveSpeed = 0f;
         followSpeed = 0f;
 
-        // Ensure the Detection script is also updated
-        Detection detectionScript = GetComponent<Detection>();
-        if (detectionScript != null)
-        {
-            detectionScript.DisableDetection(); // Hide detection visuals
-        }
+        // Start flickering effect
+        StartCoroutine(FlickerEffect(10f)); // Flicker for the duration of the stop
+
 
         StartCoroutine(ResumeMovementAfterDelay(10f)); // Resume after 10 seconds
+    }
+
+    // Coroutine to handle flickering effect
+    private IEnumerator FlickerEffect(float duration)
+    {
+        float endTime = Time.time + duration;
+        while (Time.time < endTime)
+        {
+            ghostRenderer.enabled = !ghostRenderer.enabled; // Toggle visibility
+            yield return new WaitForSeconds(0.2f); // Flicker every 0.2 seconds
+        }
+        ghostRenderer.enabled = true; // Ensure visibility is restored after flickering
     }
 
     // Coroutine to resume movement and enable the arc and circle drawing
