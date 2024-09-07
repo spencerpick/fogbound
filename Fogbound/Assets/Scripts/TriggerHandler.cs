@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TriggerHandler : MonoBehaviour
 {
+    public bool isBeingHeld = false;
     public delegate void TriggerEvent(Collider other);
     public event TriggerEvent OnEnter;
     public event TriggerEvent OnExit;
