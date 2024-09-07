@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ghostmovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Speed of movement
-    public float segmentLength = 10f; // Length of each segment
+    public float moveSpeed = 5f; // Speed of movement during patrol
+    public float segmentLength = 10f; // Length of each patrol segment
     public float followSpeed = 7f; // Speed of movement when following the player
 
     private Rigidbody rb;
@@ -14,15 +14,19 @@ public class ghostmovement : MonoBehaviour
     private float initialHeight;
     private Vector3 startPosition;
 
-    private bool isStopped = false; // To track if the ghost is stopped
+    private bool isStopped = false;  // To track if the ghost is stopped
+    private bool isStunned = false;  // Whether the ghost is currently stunned
+    private bool canMove = true;     // To track if the ghost can move
+
+    public float stunDuration = 5f;  // Duration for which the ghost remains stunned
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        startPosition = transform.position; // Store the initial position as the bottom-left corner
-        initialHeight = startPosition.y; // Store the initial height
+        startPosition = transform.position;  // Store the initial position
+        initialHeight = startPosition.y;     // Store the initial height to keep the ghost floating on the same level
 
-        // Set the first target position within the square bounds
+        // Set the first patrol target position within the bounds
         SetRandomTargetPosition();
 
         // Find the player by tag
@@ -39,9 +43,9 @@ public class ghostmovement : MonoBehaviour
 
     void Update()
     {
-        if (isStopped)
+        if (isStopped || isStunned)
         {
-            return; // Do nothing if the ghost is stopped
+            return;  // Do nothing if the ghost is stopped or stunned
         }
 
         if (isFollowingPlayer && playerTransform != null)
@@ -62,7 +66,7 @@ public class ghostmovement : MonoBehaviour
         // Move towards the target position
         Vector3 direction = (targetPosition - transform.position).normalized;
         Vector3 newPosition = transform.position + direction * moveSpeed * Time.deltaTime;
-        newPosition.y = initialHeight; // Maintain the initial height
+        newPosition.y = initialHeight; // Keep the ghost at the same height
         transform.position = newPosition;
 
         // Check if the ghost has reached the target position
@@ -107,8 +111,7 @@ public class ghostmovement : MonoBehaviour
             randomPosition = new Vector3(randomX, initialHeight, randomZ);
             distance = Vector3.Distance(transform.position, randomPosition);
         }
-        // Ensure the new target position is at least segmentLength/2 away from the current position
-        while (distance < segmentLength / 3);
+        while (distance < segmentLength / 3); // Ensure the target position is far enough
 
         // Set the new target position
         targetPosition = randomPosition;
@@ -119,11 +122,9 @@ public class ghostmovement : MonoBehaviour
         // Move towards the player
         Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
 
-        // Maintain the initial height
+        // Keep the ghost at the same height
         Vector3 newPosition = transform.position + directionToPlayer * followSpeed * Time.deltaTime;
-        newPosition.y = initialHeight; // Keep the Y position constant
-
-        // Move the ghost to the new position
+        newPosition.y = initialHeight;  // Keep the Y position constant
         transform.position = newPosition;
 
         // Ensure the ghost is looking at the player, maintaining the same height
@@ -136,7 +137,7 @@ public class ghostmovement : MonoBehaviour
         SetRandomTargetPosition();
     }
 
-    // Call this method from the Detection script
+    // Call this method from the Detection script to make the ghost follow the player
     public void SetFollowingPlayer(bool follow)
     {
         isFollowingPlayer = follow;
@@ -151,7 +152,7 @@ public class ghostmovement : MonoBehaviour
         {
             // Turn to face the player
             Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
-            directionToPlayer.y = 0; // Keep the rotation only on the Y axis
+            directionToPlayer.y = 0; // Only rotate on the Y axis
             Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 1f);
         }
@@ -161,31 +162,52 @@ public class ghostmovement : MonoBehaviour
         moveSpeed = 0f;
         followSpeed = 0f;
 
-        // Ensure the Detection script is also updated
-        Detection detectionScript = GetComponent<Detection>();
-        if (detectionScript != null)
-        {
-            detectionScript.DisableDetection(); // Hide detection visuals
-        }
-
         StartCoroutine(ResumeMovementAfterDelay(10f)); // Resume after 10 seconds
     }
 
-    // Coroutine to resume movement and enable the arc and circle drawing
+    // Coroutine to resume movement after a delay
     private IEnumerator ResumeMovementAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
 
         isStopped = false; // Resume movement
-        moveSpeed = 5f; // Reset move speed to the original value
+        moveSpeed = 5f;  // Reset move speed to the original value
         followSpeed = 7f; // Reset follow speed to the original value
+    }
 
-        // Re-enable the drawing of arcs and circles
-        Detection detectionScript = GetComponent<Detection>();
-        if (detectionScript != null)
+    // Stun the ghost when hit by the flashlight in UV mode
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Flashlight"))
         {
-            detectionScript.playerTouched = false;  // Reset playerTouched flag
-            detectionScript.EnableDetection(); // Reactivate detection visuals
+            FlashlightController flashlightController = other.GetComponent<FlashlightController>();
+
+            // Only stun the ghost if the flashlight is in UV mode
+            if (flashlightController != null && flashlightController.IsUVModeActive)
+            {
+                StartCoroutine(StunGhost());
+            }
         }
+    }
+
+    private IEnumerator StunGhost()
+    {
+        if (isStunned) yield break;  // Prevent multiple stuns at the same time
+
+        isStunned = true;  // Set the ghost to the stunned state
+        Debug.Log("Ghost is stunned!");
+
+        // Stop movement
+        moveSpeed = 0f;
+        followSpeed = 0f;
+
+        yield return new WaitForSeconds(stunDuration);  // Wait for the stun duration
+
+        // Resume movement
+        isStunned = false;
+        moveSpeed = 5f;  // Reset to the original move speed
+        followSpeed = 7f; // Reset to the original follow speed
+
+        Debug.Log("Ghost is no longer stunned.");
     }
 }
