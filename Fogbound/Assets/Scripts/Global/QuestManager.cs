@@ -6,6 +6,11 @@ using TMPro;
 public class QuestManager : MonoBehaviour
 {
 
+    public GameObject Puzzle_1;
+    public GameObject Puzzle_2;
+    public GameObject Puzzle_3;
+    public GameObject Final_Task;
+
     public TextMeshProUGUI currentThoughtText; // Reference to the text component to be stored in here
     [SerializeField] private Light highlightLightPrefab; // Reference to the prefab of the highlight object to be stored in here
     [SerializeField] private GameObject player; // Reference to the player to be stored in here
