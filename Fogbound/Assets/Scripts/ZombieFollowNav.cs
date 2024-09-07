@@ -51,7 +51,6 @@ public class ZombieFollowNav : MonoBehaviour
         }
     }
 
-
     void Update()
     {
         if (player != null && !isStunned)
@@ -77,12 +76,11 @@ public class ZombieFollowNav : MonoBehaviour
     {
         if (playerLives != null && canAttack)
         {
-            Debug.Log("Trying to attack player!"); // Add this to check if the method is being called
+            Debug.Log("PlayerLives script found, attacking player!");
             playerLives.LoseLife();
             StartCoroutine(AttackCooldown());
         }
     }
-
 
     // Coroutine to handle cooldown between attacks
     private IEnumerator AttackCooldown()
