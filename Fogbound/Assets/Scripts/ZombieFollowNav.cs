@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AI; // Required for NavMeshAgent
 
-public class ZombieFollowPlayer : MonoBehaviour
+public class ZombieFollowNav : MonoBehaviour
 {
     public Transform player; // Reference to the player
     public float stunDuration = 3f; // Duration of the stun
@@ -51,6 +51,7 @@ public class ZombieFollowPlayer : MonoBehaviour
         }
     }
 
+
     void Update()
     {
         if (player != null && !isStunned)
@@ -76,11 +77,12 @@ public class ZombieFollowPlayer : MonoBehaviour
     {
         if (playerLives != null && canAttack)
         {
-            Debug.Log("PlayerLives script found, attacking player!");
+            Debug.Log("Trying to attack player!"); // Add this to check if the method is being called
             playerLives.LoseLife();
             StartCoroutine(AttackCooldown());
         }
     }
+
 
     // Coroutine to handle cooldown between attacks
     private IEnumerator AttackCooldown()
