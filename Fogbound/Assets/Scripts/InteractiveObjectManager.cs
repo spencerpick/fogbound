@@ -95,6 +95,7 @@ public class InteractiveObjectManager : MonoBehaviour
                        
                     }
 
+                    hit.collider.gameObject.GetComponent<TriggerHandler>().isBeingHeld = true;
                     grabbedObject = hit.collider.gameObject;
                     AttachObject(playerRigidbody);
                 }
@@ -185,6 +186,9 @@ public class InteractiveObjectManager : MonoBehaviour
 
             // Reset collider and layer
             grabbedObject.GetComponent<Collider>().isTrigger = false;
+
+            // Reset the held status
+            grabbedObject.GetComponent<TriggerHandler>().isBeingHeld = false;
 
             // Set the material back to opaque when released
             SetMaterialTransparency(1f, materialColor);
