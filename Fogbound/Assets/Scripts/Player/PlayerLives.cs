@@ -1,20 +1,24 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro; // For TextMeshPro
 
 public class PlayerLives : MonoBehaviour
 {
     public int maxLives = 3; // Maximum number of lives
-    public float heartSpacing = 10f; // Spacing between hearts
-
     private int currentLives;
-    private List<GameObject> hearts = new List<GameObject>();
+
+    // Reference to the TextMeshProUGUI component for the lives display
+    public TextMeshProUGUI livesText;
 
     void Start()
     {
         // Initialize the player's lives to the maximum number of lives
         currentLives = maxLives;
         Debug.Log("Player starting with " + currentLives + " lives.");
+
+        // Update the lives text on the UI at the start
+        UpdateLivesText();
     }
 
     public void LoseLife()
@@ -26,6 +30,9 @@ public class PlayerLives : MonoBehaviour
             // Print the remaining lives to the console
             Debug.Log("Player lost a life! Lives remaining: " + currentLives);
 
+            // Update the lives text on the UI
+            UpdateLivesText();
+
             // Check if player has no lives left
             if (currentLives <= 0)
             {
@@ -35,6 +42,15 @@ public class PlayerLives : MonoBehaviour
         else
         {
             Debug.Log("Player already has 0 lives.");
+        }
+    }
+
+    // Method to update the TextMeshPro UI with the current number of lives
+    private void UpdateLivesText()
+    {
+        if (livesText != null)
+        {
+            livesText.text = "Lives: " + currentLives; // Display the current lives
         }
     }
 
