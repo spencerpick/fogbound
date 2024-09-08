@@ -255,7 +255,6 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         {
           //  Debug.Log("Puzzle complete!");
             EventManager.TriggerPuzzle_1_DoorOpen();
-            EventManager.TriggerThoughtUpdate("PUZZLE COMPLETED HELL YEAH");
         }
         else
         {

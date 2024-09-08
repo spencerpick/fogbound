@@ -17,6 +17,7 @@ public class EventManager : MonoBehaviour
     public static event Action OnPuzzle_1_DoorOpen;
 
 
+
     // ****** METHODS ****** //
 
     public static void TriggerThoughtUpdate(string newThought)
@@ -39,4 +40,8 @@ public class EventManager : MonoBehaviour
     {
         OnPuzzle_1_DoorOpen?.Invoke();
     }
+
+
+
+
 }
