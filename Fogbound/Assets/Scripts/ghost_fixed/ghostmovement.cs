@@ -3,9 +3,15 @@ using UnityEngine;
 
 public class ghostmovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Speed of movement during patrol
-    public float segmentLength = 10f; // Length of each patrol segment
+    public float moveSpeed = 5f; // Speed of movement
+    public float segmentLength = 10f; // Length of each segment
     public float followSpeed = 7f; // Speed of movement when following the player
+    private string audioClipPath = "Audios/ghostaudio"; // Path relative to the Resources folder
+    public float maxVolumeDistance = 5f; // Distance at which the sound will be loudest
+    public float minVolumeDistance = 20f; // Distance at which the sound will be quietest
+    public AudioClip ghostAudio;
+
+    public float stunDuration = 5f;  // Duration for which the ghost remains stunned
 
     private Rigidbody rb;
     private Vector3 targetPosition;
@@ -13,22 +19,20 @@ public class ghostmovement : MonoBehaviour
     private bool isFollowingPlayer = false;
     private float initialHeight;
     private Vector3 startPosition;
-
-    private bool isStopped = false;  // To track if the ghost is stopped
+    private Renderer ghostRenderer;
+    private bool isStopped = false; // To track if the ghost is stopped
     private bool isStunned = false;  // Whether the ghost is currently stunned
-    private bool canMove = true;     // To track if the ghost can move
-
-    public float stunDuration = 5f;  // Duration for which the ghost remains stunned
+    private AudioSource ghostSound; // Dynamically created AudioSource
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        startPosition = transform.position;  // Store the initial position
-        initialHeight = startPosition.y;     // Store the initial height to keep the ghost floating on the same level
+        startPosition = transform.position; // Store the initial position as the bottom-left corner
+        initialHeight = startPosition.y; // Store the initial height
 
-        // Set the first patrol target position within the bounds
+        // Set the first target position within the square bounds
         SetRandomTargetPosition();
-
+        ghostRenderer = GetComponent<Renderer>();
         // Find the player by tag
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
@@ -39,13 +43,15 @@ public class ghostmovement : MonoBehaviour
         {
             Debug.LogError("Player GameObject with tag 'Player' not found in the scene.");
         }
+        SetupGhostAudio();
     }
 
     void Update()
     {
-        if (isStopped || isStunned)
+        AdjustSoundVolume(); // Ensure this is continuously updating the volume
+        if (isStopped)
         {
-            return;  // Do nothing if the ghost is stopped or stunned
+            return; // Do nothing if the ghost is stopped
         }
 
         if (isFollowingPlayer && playerTransform != null)
@@ -66,7 +72,7 @@ public class ghostmovement : MonoBehaviour
         // Move towards the target position
         Vector3 direction = (targetPosition - transform.position).normalized;
         Vector3 newPosition = transform.position + direction * moveSpeed * Time.deltaTime;
-        newPosition.y = initialHeight; // Keep the ghost at the same height
+        newPosition.y = initialHeight; // Maintain the initial height
         transform.position = newPosition;
 
         // Check if the ghost has reached the target position
@@ -111,7 +117,8 @@ public class ghostmovement : MonoBehaviour
             randomPosition = new Vector3(randomX, initialHeight, randomZ);
             distance = Vector3.Distance(transform.position, randomPosition);
         }
-        while (distance < segmentLength / 3); // Ensure the target position is far enough
+        // Ensure the new target position is at least segmentLength/2 away from the current position
+        while (distance < segmentLength / 3);
 
         // Set the new target position
         targetPosition = randomPosition;
@@ -122,9 +129,11 @@ public class ghostmovement : MonoBehaviour
         // Move towards the player
         Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
 
-        // Keep the ghost at the same height
+        // Maintain the initial height
         Vector3 newPosition = transform.position + directionToPlayer * followSpeed * Time.deltaTime;
-        newPosition.y = initialHeight;  // Keep the Y position constant
+        newPosition.y = initialHeight; // Keep the Y position constant
+
+        // Move the ghost to the new position
         transform.position = newPosition;
 
         // Ensure the ghost is looking at the player, maintaining the same height
@@ -137,7 +146,39 @@ public class ghostmovement : MonoBehaviour
         SetRandomTargetPosition();
     }
 
-    // Call this method from the Detection script to make the ghost follow the player
+    private void SetupGhostAudio()
+    {
+        // Add AudioSource component to the ghost and configure it
+        ghostSound = gameObject.AddComponent<AudioSource>();
+        ghostSound.clip = ghostAudio;
+        ghostSound.loop = true; // Set to loop
+        ghostSound.playOnAwake = false; // Do not play on awake
+        ghostSound.spatialBlend = 1.0f; // Set to 3D sound
+        ghostSound.maxDistance = minVolumeDistance; // Set the max distance for sound attenuation
+        ghostSound.rolloffMode = AudioRolloffMode.Linear; // Linear falloff of sound
+    }
+
+    // Adjust the volume of the ghost sound based on the distance to the player
+    private void AdjustSoundVolume()
+    {
+        if (playerTransform != null && ghostSound != null)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+            // Calculate the volume based on the distance
+            float volume = Mathf.Clamp(1 - (distanceToPlayer - maxVolumeDistance) / (minVolumeDistance - maxVolumeDistance), 0, 1);
+
+            ghostSound.volume = volume;
+
+            // Play the sound if not already playing
+            if (!ghostSound.isPlaying)
+            {
+                ghostSound.Play();
+            }
+        }
+    }
+
+    // Call this method from the Detection script
     public void SetFollowingPlayer(bool follow)
     {
         isFollowingPlayer = follow;
@@ -152,7 +193,7 @@ public class ghostmovement : MonoBehaviour
         {
             // Turn to face the player
             Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
-            directionToPlayer.y = 0; // Only rotate on the Y axis
+            directionToPlayer.y = 0; // Keep the rotation only on the Y axis
             Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 1f);
         }
@@ -162,17 +203,41 @@ public class ghostmovement : MonoBehaviour
         moveSpeed = 0f;
         followSpeed = 0f;
 
+        // Start flickering effect
+        StartCoroutine(FlickerEffect(10f)); // Flicker for the duration of the stop
+
+
         StartCoroutine(ResumeMovementAfterDelay(10f)); // Resume after 10 seconds
     }
 
-    // Coroutine to resume movement after a delay
+    // Coroutine to handle flickering effect
+    private IEnumerator FlickerEffect(float duration)
+    {
+        float endTime = Time.time + duration;
+        while (Time.time < endTime)
+        {
+            ghostRenderer.enabled = !ghostRenderer.enabled; // Toggle visibility
+            yield return new WaitForSeconds(0.2f); // Flicker every 0.2 seconds
+        }
+        ghostRenderer.enabled = true; // Ensure visibility is restored after flickering
+    }
+
+    // Coroutine to resume movement and enable the arc and circle drawing
     private IEnumerator ResumeMovementAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
 
         isStopped = false; // Resume movement
-        moveSpeed = 5f;  // Reset move speed to the original value
+        moveSpeed = 5f; // Reset move speed to the original value
         followSpeed = 7f; // Reset follow speed to the original value
+
+        // Re-enable the drawing of arcs and circles
+        Detection detectionScript = GetComponent<Detection>();
+        if (detectionScript != null)
+        {
+            detectionScript.playerTouched = false;  // Reset playerTouched flag
+            detectionScript.EnableDetection(); // Reactivate detection visuals
+        }
     }
 
     // Stun the ghost when hit by the flashlight in UV mode
@@ -185,29 +250,9 @@ public class ghostmovement : MonoBehaviour
             // Only stun the ghost if the flashlight is in UV mode
             if (flashlightController != null && flashlightController.IsUVModeActive)
             {
-                StartCoroutine(StunGhost());
+                //StartCoroutine(ResumeMovementAfterDelay(stunDuration));
+                StopMovement();
             }
         }
-    }
-
-    private IEnumerator StunGhost()
-    {
-        if (isStunned) yield break;  // Prevent multiple stuns at the same time
-
-        isStunned = true;  // Set the ghost to the stunned state
-        Debug.Log("Ghost is stunned!");
-
-        // Stop movement
-        moveSpeed = 0f;
-        followSpeed = 0f;
-
-        yield return new WaitForSeconds(stunDuration);  // Wait for the stun duration
-
-        // Resume movement
-        isStunned = false;
-        moveSpeed = 5f;  // Reset to the original move speed
-        followSpeed = 7f; // Reset to the original follow speed
-
-        Debug.Log("Ghost is no longer stunned.");
     }
 }
