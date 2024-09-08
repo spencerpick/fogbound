@@ -25,6 +25,10 @@ public class PlayerLives : MonoBehaviour
     // Reference to CameraShake script
     public CameraShake cameraShake;
 
+    // Reference to Game Over panel and Try Again button
+    public GameObject gameOverPanel; // Reference to Game Over panel
+    public Button tryAgainButton;    // Reference to Try Again button
+
     void Start()
     {
         // Initialize the player's lives to the maximum number of lives
@@ -50,6 +54,18 @@ public class PlayerLives : MonoBehaviour
         if (cameraShake == null)
         {
             cameraShake = Camera.main.GetComponent<CameraShake>();
+        }
+
+        // Disable the Game Over panel at the start
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
+        }
+
+        // Add listener to Try Again button
+        if (tryAgainButton != null)
+        {
+            tryAgainButton.onClick.AddListener(RestartGame);
         }
     }
 
@@ -145,27 +161,35 @@ public class PlayerLives : MonoBehaviour
         }
     }
 
-    private void UpdateLivesDisplay()
-    {
-        for (int i = 0; i < heartImages.Count; i++)
-        {
-            if (i < currentLives)
-            {
-                // Enable the heart image if the player has that life
-                heartImages[i].SetActive(true);
-            }
-            else
-            {
-                // Disable the heart image if the player has lost that life
-                heartImages[i].SetActive(false);
-            }
-        }
-    }
-
     private void GameOver()
     {
         Debug.Log("Game Over!");
-        // Restart the level when the player runs out of lives
+
+        // Show the Game Over panel
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+
+        // Pause the game by setting timeScale to 0
+        Time.timeScale = 0f;
+
+        // Unlock the cursor and make it visible
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+    // Method for restarting the game
+    public void RestartGame()
+    {
+        // Reset the time scale to 1 (unpause the game)
+        Time.timeScale = 1f;
+
+        // Lock the cursor again and hide it if necessary
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // Reload the current scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
 }

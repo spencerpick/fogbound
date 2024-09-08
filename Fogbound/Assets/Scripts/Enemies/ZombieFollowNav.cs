@@ -8,12 +8,18 @@ public class ZombieFollowNav : MonoBehaviour
     public float stunDuration = 3f; // Duration of the stun
     public float attackRange = 1.5f;  // Range within which the zombie can damage the player
     public float damageCooldown = 2f; // Time between attacks
+    public float proximitySoundRange = 10f; // Range within which the proximity sound plays
     public PlayerLives playerLives;   // Reference to player's lives script (for damaging player)
 
     private Animator animator;
     private NavMeshAgent agent; // Reference to the NavMeshAgent
     private bool isStunned = false;
     private bool canAttack = true; // To control the attack cooldown
+    private bool isPlayingProximitySound = false; // To track if the proximity sound is already playing
+
+    public AudioClip proximitySound; // Proximity sound to play when near player
+    public AudioClip attackSound;    // Attack sound to play when zombie hits player
+    private AudioSource audioSource; // AudioSource for playing the sounds
 
     void Start()
     {
@@ -26,6 +32,13 @@ public class ZombieFollowNav : MonoBehaviour
         // Start the crawling animation
         animator.SetBool("isCrawling", true);
 
+        // Set up AudioSource component for the sound
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
         // Find the player GameObject and get its PlayerLives component
         GameObject playerObject = GameObject.FindWithTag("Player");
 
@@ -34,7 +47,6 @@ public class ZombieFollowNav : MonoBehaviour
             player = playerObject.transform;
             playerLives = playerObject.GetComponent<PlayerLives>(); // Assign PlayerLives component here
 
-            // Debugging information
             Debug.Log("Player object found: " + playerObject.name);
             if (playerLives != null)
             {
@@ -66,8 +78,38 @@ public class ZombieFollowNav : MonoBehaviour
                 TryAttackPlayer();
             }
 
+            // Play the proximity sound if the player is within proximitySoundRange
+            if (distanceToPlayer <= proximitySoundRange && !isPlayingProximitySound)
+            {
+                PlayProximitySound();
+            }
+            else if (distanceToPlayer > proximitySoundRange && isPlayingProximitySound)
+            {
+                StopProximitySound();
+            }
+
             // Ensure the crawling animation keeps playing
             animator.SetBool("isCrawling", true);
+        }
+    }
+
+    private void PlayProximitySound()
+    {
+        if (proximitySound != null && !audioSource.isPlaying)
+        {
+            audioSource.clip = proximitySound;
+            audioSource.loop = true; // Loop the proximity sound
+            audioSource.Play();
+            isPlayingProximitySound = true;
+        }
+    }
+
+    private void StopProximitySound()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            isPlayingProximitySound = false;
         }
     }
 
@@ -78,6 +120,17 @@ public class ZombieFollowNav : MonoBehaviour
         {
             Debug.Log("PlayerLives script found, attacking player!");
             playerLives.LoseLife();
+
+            // Play the attack sound
+            if (attackSound != null)
+            {
+                audioSource.PlayOneShot(attackSound);
+            }
+            else
+            {
+                Debug.LogWarning("Attack sound not assigned.");
+            }
+
             StartCoroutine(AttackCooldown());
         }
     }
