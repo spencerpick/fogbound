@@ -58,7 +58,7 @@ public class Puzzle_1 : MonoBehaviour
 
             toyAssignments[toyName] = assignedNumber; // Set the number to the current toy in the dictionary
 
-         //   Debug.Log($"{toyName} assigned to pillar {assignedNumber}");
+            Debug.Log($"{toyName} assigned to pillar {assignedNumber}");
 
         }
         
@@ -78,6 +78,7 @@ public class Puzzle_1 : MonoBehaviour
     {
         foreach (var toyAssignment in toyAssignments)
         {
+            Debug.Log($"{toyAssignment.Key} should be placed on pillar {toyAssignment.Value}");
             string toyName = toyAssignment.Key;
             int assignedPillar = toyAssignment.Value;
 
@@ -88,9 +89,12 @@ public class Puzzle_1 : MonoBehaviour
             {
                 // Spawn the toy at the corresponding spawn point based on the assigned pillar
                 Transform spawnPoint = spawnPoints[assignedPillar - 1];
-                Instantiate(toyPrefab, spawnPoint.position, spawnPoint.rotation);
+                GameObject spawnedToy = Instantiate(toyPrefab, spawnPoint.position, spawnPoint.rotation);
 
-              //  Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
+                spawnedToy.name = toyName; // Remove clone bit from name
+
+
+                Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
             }
             else
             {

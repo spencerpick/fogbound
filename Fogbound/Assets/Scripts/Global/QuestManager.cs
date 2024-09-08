@@ -71,7 +71,7 @@ public class QuestManager : MonoBehaviour
     void Update()
     {
         HandleQuestStage();
-        Debug.Log(currentQuestStage);
+      //  Debug.Log(currentQuestStage);
     }
 
     IEnumerator DelayQuestStart(float delayTime) // Coroutine to delay the quest start and avoid sound cutting off
@@ -153,7 +153,7 @@ public class QuestManager : MonoBehaviour
 
     private void HandleHighlight(GameObject obj, float intensity, float range, bool highlight, float yPosOffset = 0f)
     {
-        Debug.Log("HIGHLIGHTING" + obj + " " + highlight);
+     //   Debug.Log("HIGHLIGHTING" + obj + " " + highlight);
         if (highlight)
         {
             if (!activeHighlights.ContainsKey(obj))

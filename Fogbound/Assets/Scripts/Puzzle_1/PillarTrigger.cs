@@ -43,7 +43,7 @@ public class PillarTrigger : MonoBehaviour
             if (!toysOnPillar.Contains(toy))
             {
                 toysOnPillar.Add(toy);
-               // Debug.Log($"Toy {toy.name} stabilized and placed on Pillar {pillarNumber}.");
+                Debug.Log($"Toy {toy.name} stabilized and placed on Pillar {pillarNumber}.");
 
                 // Trigger placement event
                 EventManager.TriggerToyPlacedOnPillar(toy, pillarNumber);
@@ -61,7 +61,7 @@ public class PillarTrigger : MonoBehaviour
             if (!toyStabilizationTimers.ContainsKey(other.gameObject)) // If not already tracking this toy
             {
                 toyStabilizationTimers[other.gameObject] = stabilizationTime;
-               // Debug.Log($"Toy {other.gameObject.name} entered Pillar {pillarNumber}. Stabilization timer started.");
+                Debug.Log($"Toy {other.gameObject.name} entered Pillar {pillarNumber}. Stabilization timer started.");
             }
         }
     }
@@ -80,7 +80,7 @@ public class PillarTrigger : MonoBehaviour
             if (toyStabilizationTimers.ContainsKey(other.gameObject))
             {
                 toyStabilizationTimers.Remove(other.gameObject);
-              //  Debug.Log($"Toy {other.gameObject.name} left Pillar {pillarNumber} before stabilizing. Timer reset.");
+                Debug.Log($"Toy {other.gameObject.name} left Pillar {pillarNumber} before stabilizing. Timer reset.");
             }
         }
     }
@@ -94,7 +94,7 @@ public class PillarTrigger : MonoBehaviour
             {
                 // If a toy re-enters the trigger after leaving, restart the timer
                 toyStabilizationTimers[other.gameObject] = stabilizationTime;
-              //  Debug.Log($"Toy {other.gameObject.name} is staying in Pillar {pillarNumber}'s trigger.");
+                Debug.Log($"Toy {other.gameObject.name} is staying in Pillar {pillarNumber}'s trigger.");
             }
         }
     }
@@ -110,7 +110,7 @@ public class PillarTrigger : MonoBehaviour
             if (toysOnPillar.Contains(toy))
             {
                 toysOnPillar.Remove(toy);
-              //  Debug.Log($"Toy {toy.name} exited Pillar {pillarNumber} after delay. Removed from placement.");
+                Debug.Log($"Toy {toy.name} exited Pillar {pillarNumber} after delay. Removed from placement.");
 
                 // Notify puzzle manager that toy has left the pillar
                 puzzleManager.RemoveToyFromPillar(pillarNumber, toy.name);

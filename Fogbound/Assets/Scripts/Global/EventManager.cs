@@ -21,7 +21,6 @@ public class EventManager : MonoBehaviour
 
     public static void TriggerThoughtUpdate(string newThought)
     {
-        Debug.Log("TRIGGERED THOUGHT.");
         OnThoughtUpdate?.Invoke(newThought);
     }
 
