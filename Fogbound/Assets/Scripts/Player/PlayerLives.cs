@@ -62,7 +62,9 @@ public class PlayerLives : MonoBehaviour
             // Play the lose life sound
             if (loseLifeSound != null)
             {
+                Debug.Log("Lose life sound is assigned.");
                 audioSource.PlayOneShot(loseLifeSound);
+
             }
             else
             {
