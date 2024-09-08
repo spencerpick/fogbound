@@ -5,11 +5,14 @@ using UnityEngine;
 
 public class Puzzle_2 : MonoBehaviour
 {
+    public GameObject PuzzleReward;
+    public GameObject RewardSpawnLocation;
+    public bool rewardGiven = false;
     [SerializeField] PuzzlePillar[] puzzleScripts;
     [SerializeField] List<bool> puzzleSolution;
 
     public GameObject Puzzle2Clues;
-    public bool Puzzle2Solved = false;
+    public bool puzzleCompleted = false;
 
     void Start()
     {
@@ -95,5 +98,13 @@ public class Puzzle_2 : MonoBehaviour
         }
 
         return solution;
+    }
+
+    public void giveReward()
+    {
+        if (!rewardGiven)
+        {
+            GameObject.FindWithTag("GameManager").GetComponent<InteractiveObjectManager>().AddIntereactive(Instantiate(PuzzleReward, RewardSpawnLocation.transform));
+        }
     }
 }

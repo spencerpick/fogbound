@@ -92,10 +92,10 @@ public class InteractiveObjectManager : MonoBehaviour
 
                     // Check puzzle 2
                     Puzzle_2 puzzle_2 = pillar.GetComponentInParent<Puzzle_2>();
-                    puzzle_2.Puzzle2Solved = puzzle_2.PuzzleCheck();
-                    if (puzzle_2.Puzzle2Solved)
+                    puzzle_2.puzzleCompleted = puzzle_2.PuzzleCheck();
+                    if (puzzle_2.puzzleCompleted)
                     {
-                        Debug.Log(puzzle_2.Puzzle2Solved);
+                        puzzle_2.giveReward();
                     }
                 }
             }
