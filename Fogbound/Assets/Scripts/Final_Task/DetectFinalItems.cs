@@ -6,6 +6,7 @@ public class DetectFinalItems : MonoBehaviour
 {
     public int objectCount = 0;
     public int desiredObjectCount = 3;
+    public GameObject outroManager;
 
     // List to track objects in the trigger
     private List<Collider> objectsInTrigger = new List<Collider>();
@@ -16,6 +17,7 @@ public class DetectFinalItems : MonoBehaviour
         // Check if the object count matches the desired count
         if (objectCount == desiredObjectCount)
         {
+            outroManager.GetComponent<OutroManager>().playOutro();
             Debug.Log("GAME FINISHED!");
         }
     }
