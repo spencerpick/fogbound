@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // For TextMeshPro
+using UnityEngine.UI; // For UI elements
 
 public class PlayerLives : MonoBehaviour
 {
@@ -17,6 +18,13 @@ public class PlayerLives : MonoBehaviour
     public AudioClip loseLifeSound;
     private AudioSource audioSource;
 
+    public Image damageFlashImage; // Reference to the UI Image for damage feedback
+    public Color damageColor = new Color(1f, 0f, 0f, 0.5f); // Red color with transparency
+    public float flashDuration = 0.5f; // How long the flash lasts
+
+    // Reference to CameraShake script
+    public CameraShake cameraShake;
+
     void Start()
     {
         // Initialize the player's lives to the maximum number of lives
@@ -31,6 +39,18 @@ public class PlayerLives : MonoBehaviour
         }
 
         CreateHearts();
+
+        // Ensure the damage flash image starts invisible
+        if (damageFlashImage != null)
+        {
+            damageFlashImage.color = Color.clear;
+        }
+
+        // Get the CameraShake component from the main camera
+        if (cameraShake == null)
+        {
+            cameraShake = Camera.main.GetComponent<CameraShake>();
+        }
     }
 
     private void CreateHearts()
@@ -64,12 +84,40 @@ public class PlayerLives : MonoBehaviour
             {
                 Debug.Log("Lose life sound is assigned.");
                 audioSource.PlayOneShot(loseLifeSound);
-
             }
             else
             {
                 Debug.LogWarning("Lose life sound not assigned.");
             }
+
+            // Trigger visual feedback (screen flash)
+            StartCoroutine(FlashDamageEffect());
+
+            // Trigger camera shake
+            if (cameraShake != null)
+            {
+                cameraShake.TriggerShake();
+            }
+            else
+            {
+                Debug.LogWarning("CameraShake script is not assigned.");
+            }
+        }
+    }
+
+    // Coroutine for the screen flash effect
+    private IEnumerator FlashDamageEffect()
+    {
+        if (damageFlashImage != null)
+        {
+            // Set the image color to the damage color
+            damageFlashImage.color = damageColor;
+
+            // Wait for the duration of the flash
+            yield return new WaitForSeconds(flashDuration);
+
+            // Gradually fade out the flash by setting it back to transparent
+            damageFlashImage.color = Color.clear;
         }
     }
 
@@ -82,7 +130,7 @@ public class PlayerLives : MonoBehaviour
             // Print the remaining lives to the console
             Debug.Log("Player lost a life! Lives remaining: " + currentLives);
 
-            // Update the lives text on the UI
+            // Update the lives UI
             RemoveHeart();
 
             // Check if player has no lives left
