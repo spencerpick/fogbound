@@ -1445,11 +1445,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   stunDuration: 5
-  attackRange: 3
-  damageCooldown: 2
-  proximitySoundRange: 6
+  attackRange: 2
+  damageCooldown: 5
+  proximitySoundRange: 8
   playerLives: {fileID: 0}
   proximitySound: {fileID: 8300000, guid: 1890553dc79a15740acd11662709df14, type: 3}
+  attackSound: {fileID: 8300000, guid: 413492eaee822ea4dbd9b253bb988a89, type: 3}
 --- !u!195 &1021539720518125637
 NavMeshAgent:
   m_ObjectHideFlags: 0
