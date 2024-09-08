@@ -14,14 +14,21 @@ public class PlayerLives : MonoBehaviour
 
     private List<GameObject> heartImages = new List<GameObject>();
 
-    // Reference to the TextMeshProUGUI component for the lives display
-    public TextMeshProUGUI livesText;
+    public AudioClip loseLifeSound;
+    private AudioSource audioSource;
 
     void Start()
     {
         // Initialize the player's lives to the maximum number of lives
         currentLives = maxLives;
         Debug.Log("Player starting with " + currentLives + " lives.");
+
+        // Initialize AudioSource component (add one if it doesn't exist)
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
 
         CreateHearts();
     }
@@ -51,6 +58,16 @@ public class PlayerLives : MonoBehaviour
             // Remove the heart from the container and destroy the object
             heartImages.Remove(heartToRemove);
             Destroy(heartToRemove);
+
+            // Play the lose life sound
+            if (loseLifeSound != null)
+            {
+                audioSource.PlayOneShot(loseLifeSound);
+            }
+            else
+            {
+                Debug.LogWarning("Lose life sound not assigned.");
+            }
         }
     }
 
@@ -77,15 +94,6 @@ public class PlayerLives : MonoBehaviour
             Debug.Log("Player already has 0 lives.");
         }
     }
-
-    // Method to update the TextMeshPro UI with the current number of lives
-    /*private void UpdateLivesText()
-    {
-        if (livesText != null)
-        {
-            livesText.text = "Lives: " + currentLives; // Display the current lives
-        }
-    }*/
 
     private void UpdateLivesDisplay()
     {
