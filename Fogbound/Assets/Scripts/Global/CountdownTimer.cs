@@ -1,22 +1,25 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement; // Required to reload the scene
+using UnityEngine.SceneManagement; 
 using TMPro;
 
 public class CountdownTimer : MonoBehaviour
 {
-    public float timeRemaining = 600f; // 10 minutes
-    public TextMeshProUGUI timerText;  // UI Text component to show the time
-    private bool timerIsRunning = false;
+    public float timeRemaining = 600f; // 10 minute timer till game over
+    public TextMeshProUGUI timerText;  // UI showing current time left
+    private bool timerIsRunning = false;  // Whether the timer is running or not
+    private PlayerLives playerLives; // Reference to player lives so can cause player to die if timer reaches 0
 
     void Start()
     {
-        timerIsRunning = true;
+        playerLives = FindObjectOfType<PlayerLives>(); // Find reference to player lives object
+
+        timerIsRunning = true; // Set the timer to run
     }
 
     void Update()
     {
-        if (timerIsRunning)
+        if (timerIsRunning) // Countdown the timer
         {
             if (timeRemaining > 0)
             {
@@ -31,45 +34,25 @@ public class CountdownTimer : MonoBehaviour
             }
         }
 
-        // For testing purposes, press the 'R' key to manually restart the game
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            RestartGame(); // Restart the game when 'R' key is pressed
-        }
     }
 
-    public void stopTimer()
+    public void stopTimer() 
     {
         timerIsRunning = false;
     }
 
-    // Time
-    void DisplayTime(float timeToDisplay)
+    void DisplayTime(float timeToDisplay) // Display the time left in minutes and seconds
     {
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    // Called when the timer reaches zero
-    void OnTimerEnd()
+    
+    void OnTimerEnd() // Called when the timer reaches zero
     {
-        Debug.Log("Time's up! Game Over.");
-        EndGame();
+        playerLives.GameOver();
     }
 
-    // Placeholder for game-over logic
-    void EndGame()
-    {
-        Debug.Log("Ending the game.");
-        // Example: you can display a "Game Over" screen or trigger any other logic
-        RestartGame(); // Automatically restart the game after time's up
-    }
 
-    // Restarts the game by reloading the current scene
-    public void RestartGame()
-    {
-        Debug.Log("Restarting the game...");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload the current scene
-    }
 }

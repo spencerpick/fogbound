@@ -354,7 +354,7 @@ public class QuestManager : MonoBehaviour
 
     }
 
-    private bool CheckDistToMarker(GameObject marker)
+    private bool CheckDistToMarker(GameObject marker) // Check distance from player to quest marker and if they are close enough then consider them having reached the marker
     {
         float distance = Vector3.Distance(player.transform.position, marker.transform.position);
 
@@ -366,7 +366,7 @@ public class QuestManager : MonoBehaviour
         return false;
     }
         
-    private void PlayThoughtSound(string soundType)
+    private void PlayThoughtSound(string soundType) // Play either the thinking or gasping sound
     {
         if (!audioSource.isPlaying)
         {
@@ -386,7 +386,7 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    public void UpdateThought(string newThought)
+    public void UpdateThought(string newThought) // Update the current thought on the screen
     {
         currentThoughtText.text = newThought;
     }

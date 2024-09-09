@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
-    public AudioClip[] musicTracks; // Array to hold your music tracks
+    public AudioClip[] musicTracks; // Stores music tracks
     private AudioSource audioSource;
     private int currentTrackIndex = 0;
 
@@ -31,7 +31,7 @@ public class MusicManager : MonoBehaviour
             PlayNextTrack();
         }
 
-        if (Input.GetKeyDown(KeyCode.Asterisk) || Input.GetKeyDown(KeyCode.KeypadMultiply)) // For testing purposes, press * to listen to next track
+        if (Input.GetKeyDown(KeyCode.Asterisk) || Input.GetKeyDown(KeyCode.KeypadMultiply)) // For testing purposes
         {
             Debug.Log("Skipping to the next track...");
             PlayNextTrack();
@@ -41,7 +41,7 @@ public class MusicManager : MonoBehaviour
 
     private void PlayNextTrack()
     {
-        if (musicTracks.Length == 0) return; // Make sure there are tracks available
+        if (musicTracks.Length == 0) return; 
 
         // Assign the next track
         audioSource.clip = musicTracks[currentTrackIndex];

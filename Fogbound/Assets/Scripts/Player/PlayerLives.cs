@@ -161,7 +161,7 @@ public class PlayerLives : MonoBehaviour
         }
     }
 
-    private void GameOver()
+    public void GameOver()
     {
         Debug.Log("Game Over!");
 
