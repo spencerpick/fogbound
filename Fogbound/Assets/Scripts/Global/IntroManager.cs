@@ -18,6 +18,11 @@ public class IntroManager : MonoBehaviour
         {
             DisableScripts(); // Disable all scripts in the list while the intro is playing
             videoPlayer.loopPointReached += OnVideoEnd;
+
+            // Load the video from the StreamingAssets folder
+            string path = System.IO.Path.Combine(Application.streamingAssetsPath, "INTRO.mp4");
+            videoPlayer.url = path;
+
             videoPlayer.Play(); // Play the intro video
             ShowSkipMessage(); // Display the enter to skip text
         }
@@ -26,6 +31,7 @@ public class IntroManager : MonoBehaviour
             EnableScripts(); // If intro is disabled then enable all scripts straight away
         }
     }
+
 
     void Update()
     {
