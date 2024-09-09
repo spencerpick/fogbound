@@ -18,7 +18,6 @@ public class DetectFinalItems : MonoBehaviour
         if (objectCount == desiredObjectCount)
         {
             outroManager.GetComponent<OutroManager>().playOutro();
-            Debug.Log("GAME FINISHED!");
         }
     }
 

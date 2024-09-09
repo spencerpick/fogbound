@@ -8,17 +8,6 @@ public class InteractiveObjectManager : MonoBehaviour
     public Image cursorImage;
     public Rigidbody playerRigidbody;
 
-    public GameObject keyDisplay;
-
-    public GameObject iconList;
-    public GameObject iconPrefab;
-    public KeyCode interactKey = KeyCode.E;
-    public Text KeyText;
-
-    private GameObject pickupableItem;
-    private float pickedUpItemNum = 0;
-    private List<GameObject> itemList = new List<GameObject>();
-
     private Color materialColor;
 
     private Camera playerCamera;
@@ -57,9 +46,6 @@ public class InteractiveObjectManager : MonoBehaviour
         // Initiate cursor scaling
         startingCursorScale = cursorImage.transform.localScale;
         cursorScaleMax = startingCursorScale * 1.5f;
-
-        // Set the interact key info
-        KeyText.text = interactKey.ToString();
     }
 
     private void Update()
@@ -105,12 +91,6 @@ public class InteractiveObjectManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             ReleaseObject();
-        }
-
-        if (Input.GetKeyDown(interactKey) && pickupableItem != null)
-        {
-            PickupItem(pickupableItem);
-            keyDisplay.SetActive(false);
         }
     }
 
@@ -262,16 +242,6 @@ public class InteractiveObjectManager : MonoBehaviour
     {
         if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out RaycastHit hit, RayCastDistance, LayerMask.GetMask("Default")))
         {
-            if (hit.collider.CompareTag("PickupItem"))
-            {
-                keyDisplay.SetActive(true);
-                pickupableItem = hit.collider.gameObject;
-            }
-            else
-            {
-                pickupableItem = null;
-                keyDisplay.SetActive(false);
-            }
 
             if (!hit.collider.CompareTag("Interactive") && !hit.collider.CompareTag("PickupItem") && !hit.collider.CompareTag("RotationSegment"))
             {
@@ -289,7 +259,6 @@ public class InteractiveObjectManager : MonoBehaviour
         else
         {
             isInteractiveInView = false;
-            keyDisplay.SetActive(false);
         }
     }
 
@@ -305,34 +274,5 @@ public class InteractiveObjectManager : MonoBehaviour
             // Scale down
             cursorImage.transform.localScale = startingCursorScale;
         }
-    }
-
-    void PickupItem(GameObject item)
-    {
-        pickedUpItemNum++;
-
-        // Get the item icon from the pickup item
-        Sprite itemIcon = item.GetComponent<PickupItem>().itemIcon;
-        if (!itemIcon)
-        {
-            Debug.Log(item.name + " has no icon!");
-            return;
-        }
-
-        // Create and display the new icon
-        GameObject newIcon = Instantiate(iconPrefab);
-        newIcon.GetComponent<Image>().sprite = itemIcon;
-        newIcon.transform.SetParent(iconList.transform);
-
-        // Offset the new icon
-        float offsetX = 130f;
-        newIcon.transform.localPosition = new Vector3(pickedUpItemNum * offsetX, 0f, 0f);
-
-        // Reset rotation and scale
-        newIcon.transform.localRotation = Quaternion.identity;
-        newIcon.transform.localScale = Vector3.one;
-
-        itemList.Add(newIcon);
-        GameObject.Destroy(item);
     }
 }

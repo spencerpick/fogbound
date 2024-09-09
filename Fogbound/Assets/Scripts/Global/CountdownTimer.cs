@@ -38,6 +38,11 @@ public class CountdownTimer : MonoBehaviour
         }
     }
 
+    public void stopTimer()
+    {
+        timerIsRunning = false;
+    }
+
     // Time
     void DisplayTime(float timeToDisplay)
     {

@@ -10,25 +10,38 @@ public class OutroManager : MonoBehaviour
     public GameObject Leaderboard;
     public GameObject Timer;
 
+    public float timeLeft = 0;
+
+    [SerializeField] private List<GameObject> scriptsToDisable; // Drag and drop scripts in the Inspector
+
+    private void Start()
+    {
+        
+    }
+
     public void playOutro()
     {
+        foreach (GameObject script in scriptsToDisable)
+        {
+            if (script != null)
+            {
+                script.SetActive(false);
+            }
+        }
+
         videoPlayer.loopPointReached += showLeaderboard;
         videoPlayer.Play();
     }
 
     void showLeaderboard(VideoPlayer vp)
     {
-        videoPlayer.Stop(); // Stop the video once it finishes
+        gameObject.SetActive(false);
         Leaderboard leaderboard = Leaderboard.GetComponent<Leaderboard>(); // Get the leaderboard script
-        CountdownTimer timer = Timer.GetComponent<CountdownTimer>(); // Get the countdown timer script
 
-        // Add the remaining time to the leaderboard
-        if (timer != null)
-        {
-            leaderboard.AddScore(timer.timeRemaining);
-        }
+        leaderboard.nameInputUI.SetActive(true);
+        leaderboard.timeToSubmit = 600f - Timer.GetComponent<CountdownTimer>().timeRemaining;
 
-        // Activate the leaderboard UI (assuming it's inactive until the video finishes)
-        leaderboard.backgroundImage.SetActive(true);
+        Timer.GetComponent<CountdownTimer>().stopTimer();
+        Cursor.lockState = CursorLockMode.None;
     }
 }
