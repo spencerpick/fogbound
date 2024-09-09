@@ -121,10 +121,10 @@ public class ZombieFollowNav : MonoBehaviour
             Debug.Log("PlayerLives script found, attacking player!");
             playerLives.LoseLife();
 
-            // Play the attack sound
+            // Play the attack sound with reduced volume (e.g., 0.5f for 50% volume)
             if (attackSound != null)
             {
-                audioSource.PlayOneShot(attackSound);
+                audioSource.PlayOneShot(attackSound, 0.4f); // The second argument is the volume, adjust as needed
             }
             else
             {
@@ -134,6 +134,7 @@ public class ZombieFollowNav : MonoBehaviour
             StartCoroutine(AttackCooldown());
         }
     }
+
 
     // Coroutine to handle cooldown between attacks
     private IEnumerator AttackCooldown()
