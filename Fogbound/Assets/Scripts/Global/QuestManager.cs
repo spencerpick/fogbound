@@ -31,6 +31,15 @@ public class QuestManager : MonoBehaviour
     /// Quest markers ///
     [SerializeField] private GameObject First_Ghost_Marker;
     [SerializeField] private GameObject Orphanage_Entrance_Marker;
+    [SerializeField] private GameObject Orphanage_Look_Around_Marker_1;
+    [SerializeField] private GameObject Orphanage_Look_Around_Marker_2;
+    [SerializeField] private GameObject Pillar_1_Marker;
+    [SerializeField] private GameObject Pillar_2_Marker;
+    [SerializeField] private GameObject Pillar_3_Marker;
+    [SerializeField] private GameObject Pillar_4_Marker;
+    [SerializeField] private GameObject Pillar_5_Marker;
+    [SerializeField] private GameObject Pillar_6_Marker;
+    [SerializeField] private GameObject Puzzle_1_Complete_Marker;
 
 
 
@@ -71,7 +80,7 @@ public class QuestManager : MonoBehaviour
     void Update()
     {
         HandleQuestStage();
-      //  Debug.Log(currentQuestStage);
+        Debug.Log(currentQuestStage);
     }
 
     IEnumerator DelayQuestStart(float delayTime) // Coroutine to delay the quest start and avoid sound cutting off
@@ -97,6 +106,7 @@ public class QuestManager : MonoBehaviour
                 currentQuestNum += 1;
                 currentQuestStage = QuestStages[currentQuestNum];
                 thoughtSoundPlayed = false;
+                HandleHighlight(First_Ghost_Marker.gameObject, 6f, 5f, false, 1.31f);
             }
         }
 
@@ -109,8 +119,55 @@ public class QuestManager : MonoBehaviour
                 thoughtSoundPlayed = true;
             }
             HandleHighlight(Orphanage_Entrance_Marker.gameObject, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(Orphanage_Entrance_Marker))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = false;
+                HandleHighlight(Orphanage_Entrance_Marker.gameObject, 6f, 5f, false, 1.31f);
+            }
         }
 
+        if (currentQuestStage == "Look-Around-Orphanage") // Quest stage 1
+        {
+            UpdateThought("I should look around the orphanage, this is where those other children went missing, maybe theres a clue about Emily..");
+            if (!thoughtSoundPlayed)
+            {
+                PlayThoughtSound("thinking");
+                thoughtSoundPlayed = true;
+            }
+            HandleHighlight(Orphanage_Look_Around_Marker_1.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Orphanage_Look_Around_Marker_2.gameObject, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(Orphanage_Look_Around_Marker_1) || CheckDistToMarker(Orphanage_Look_Around_Marker_2))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = false;
+                HandleHighlight(Orphanage_Look_Around_Marker_1.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Orphanage_Look_Around_Marker_2.gameObject, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Place-Toys") // Quest stage 1
+        {
+            UpdateThought("These pillars don't look like they belong here... They've got to be important somehow, hmm theres a toy on that one, maybe I should see if there are any other toys for the other pillars..\n\n<b>LMB while looking at a toy to pick it up</b>");
+            if (!thoughtSoundPlayed)
+            {
+                PlayThoughtSound("gasp");
+                thoughtSoundPlayed = true;
+            }
+
+            HandleHighlight(Pillar_1_Marker.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Pillar_2_Marker.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Pillar_3_Marker.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Pillar_4_Marker.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Pillar_5_Marker.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Pillar_6_Marker.gameObject, 6f, 5f, true, 1.31f);
+            HandleHighlight(Puzzle_1_Complete_Marker.gameObject, 6f, 3f, true, 1.31f);
+
+        }
 
     }
 
@@ -125,7 +182,7 @@ public class QuestManager : MonoBehaviour
 
         return false;
     }
-
+        
     private void PlayThoughtSound(string soundType)
     {
         if (!audioSource.isPlaying)
@@ -153,7 +210,6 @@ public class QuestManager : MonoBehaviour
 
     private void HandleHighlight(GameObject obj, float intensity, float range, bool highlight, float yPosOffset = 0f)
     {
-     //   Debug.Log("HIGHLIGHTING" + obj + " " + highlight);
         if (highlight)
         {
             if (!activeHighlights.ContainsKey(obj))
