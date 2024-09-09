@@ -6,26 +6,26 @@ using TMPro;
 public class QuestManager : MonoBehaviour
 {
 
-    public GameObject Puzzle_1;
-    public GameObject Puzzle_2;
-    public GameObject Puzzle_3;
-    public GameObject Final_Task;
+    public GameObject Puzzle_1; // Reference to puzzle 1
+    public GameObject Puzzle_2; // Reference to puzzle 2
+    public GameObject Puzzle_3; // Reference to puzzle 3
+    public GameObject Final_Task;// Reference to final task
 
     public TextMeshProUGUI currentThoughtText; // Reference to the text component to be stored in here
     [SerializeField] private Light highlightLightPrefab; // Reference to the prefab of the highlight object to be stored in here
     [SerializeField] private GameObject player; // Reference to the player to be stored in here
 
 
-    private List<string> QuestStages;
-    private string currentQuestStage;
-    private int currentQuestNum = 0;
+    private List<string> QuestStages; // Stores all the quest stages
+    private string currentQuestStage; // Stores the current quest stage
+    private int currentQuestNum = 0; // Stores the current quest stages index
 
     private AudioSource audioSource; // Reference to the audio source
-    private bool thoughtSoundPlayed = false;
-    [SerializeField] private AudioClip thinkingSound;
-    [SerializeField] private AudioClip gaspSound;
+    private bool thoughtSoundPlayed = false; // Stores whether a thought sound has been played at the current quest stage
+    [SerializeField] private AudioClip thinkingSound; // Reference to "hmm" sound
+    [SerializeField] private AudioClip gaspSound; // Reference to gasp sound
 
-    private Dictionary<GameObject, Light> activeHighlights = new Dictionary<GameObject, Light>(); // Dictionary will store active highlights in it, i.e. objects currently highlighted (making it easy to remove them)
+    private Dictionary<GameObject, Light> activeHighlights = new Dictionary<GameObject, Light>(); // Stores active highlights - making it easy to then remove them after.
 
 
     /// Quest markers ///
@@ -45,8 +45,8 @@ public class QuestManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("STARTING QUEST MANAGER");
         QuestStages = new List<string>();
+
         // Initalise the different quest stages
         QuestStages.Add("First-Ghost");
         QuestStages.Add("Find-Orphanage");
@@ -57,9 +57,9 @@ public class QuestManager : MonoBehaviour
         QuestStages.Add("Reveal-Basement");
         QuestStages.Add("Complete-Ritual");
 
-        audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>(); // Get reference to the audio source component on the quest manager object
         
-        StartCoroutine(DelayQuestStart(0.5f)); // Delay the initial quest stage update by 2 seconds to avoid sound cut-off
+        StartCoroutine(DelayQuestStart(0.5f)); // Delay the initial quest stage update by 2 seconds to avoid sound cutting off
 
 
 
@@ -80,7 +80,6 @@ public class QuestManager : MonoBehaviour
     void Update()
     {
         HandleQuestStage();
-        Debug.Log(currentQuestStage);
     }
 
     IEnumerator DelayQuestStart(float delayTime) // Coroutine to delay the quest start and avoid sound cutting off
@@ -89,7 +88,7 @@ public class QuestManager : MonoBehaviour
         currentQuestStage = QuestStages[currentQuestNum]; 
     }
 
-    private void HandleQuestStage()
+    private void HandleQuestStage() // Handles what to do at each quest stage
     {
         if (currentQuestStage == "First-Ghost") // Quest stage 0
         {

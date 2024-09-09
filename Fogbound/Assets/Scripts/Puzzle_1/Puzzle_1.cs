@@ -5,20 +5,20 @@ using UnityEngine;
 public class Puzzle_1 : MonoBehaviour
 {
 
-    [SerializeField] bool CompletePuzzle = false; // Testing purposes
-    [SerializeField] private Transform[] spawnPoints; 
-    [SerializeField] private GameObject[] toyPrefabs;
+    [SerializeField] bool CompletePuzzle = false; // Whether puzzle is complete or not
+    [SerializeField] private Transform[] spawnPoints; // Stores all references to different spawn point objects
+    [SerializeField] private GameObject[] toyPrefabs; // Stores the toy game objects so they can be spawned in
 
-    private Dictionary<string, int> toyAssignments = new Dictionary<string, int>();
-    public Dictionary<int, string> currentToyPlacement = new Dictionary<int, string>();
-    private Dictionary<string, bool> toyPlacementStatus = new Dictionary<string, bool>();
+    private Dictionary<string, int> toyAssignments = new Dictionary<string, int>();  // Stores which toy should go on which pillar
+    public Dictionary<int, string> currentToyPlacement = new Dictionary<int, string>(); // Stores which toys are currently on which pillars
+    private Dictionary<string, bool> toyPlacementStatus = new Dictionary<string, bool>();  // Stores whether toy is on its correct pillar or not
 
     void Start()
     {
         GiveToysRandomNumbers(); // Assign each toy a random number between 1 - 6
-        SpawnToys();
+        SpawnToys(); // Spawn the toys on randomised spawn points between 1 - 6
 
-        // Initalize all toy placement statuses to be be false as they are not correctly placed on pillars
+        // Initalize all toy placement statuses to be false as they are not correctly placed on pillars
         foreach (var toy in toyAssignments.Keys)
         {
             toyPlacementStatus[toy] = false;
@@ -35,20 +35,11 @@ public class Puzzle_1 : MonoBehaviour
         EventManager.OnToyPlacedOnPillar -= HandleToyPlacedOnPillar;
     }
 
-
-    void Update()
-    {
-        if (CompletePuzzle == true)
-        {
-
-        }
-    }
-
     private void GiveToysRandomNumbers() // Asign a unique pillar number to each toy
     {
         string[] toyNames = { "Bear", "Duck", "Rabbit", "Monkey", "Penguin", "Pig" }; // All the names of the toys
 
-        List<int> availableNumbers = new List<int> { 1, 2, 3, 4, 5, 6 };
+        List<int> availableNumbers = new List<int> { 1, 2, 3, 4, 5, 6 }; // Available numbers for toys to be assigned to
 
         foreach (string toyName in toyNames)
         {
@@ -58,7 +49,7 @@ public class Puzzle_1 : MonoBehaviour
 
             toyAssignments[toyName] = assignedNumber; // Set the number to the current toy in the dictionary
 
-            Debug.Log($"{toyName} assigned to pillar {assignedNumber}");
+            //Debug.Log($"{toyName} assigned to pillar {assignedNumber}");
 
         }
         
@@ -74,11 +65,11 @@ public class Puzzle_1 : MonoBehaviour
         return -1; // Return -1 to indicate an error if the toy wasn't found
     }
 
-    private void SpawnToys() // Spawn toys at the corresponding spawn points
+    private void SpawnToys() // Spawn toys at their corresponding spawn points
     {
         foreach (var toyAssignment in toyAssignments)
         {
-            Debug.Log($"{toyAssignment.Key} should be placed on pillar {toyAssignment.Value}");
+            //Debug.Log($"{toyAssignment.Key} should be placed on pillar {toyAssignment.Value}");
             string toyName = toyAssignment.Key;
             int assignedPillar = toyAssignment.Value;
 
@@ -93,8 +84,7 @@ public class Puzzle_1 : MonoBehaviour
 
                 spawnedToy.name = toyName; // Remove clone bit from name
 
-
-                Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
+                //Debug.Log($"Spawned {toyName} at spawn point for pillar {assignedPillar}");
             }
             else
             {
@@ -103,7 +93,7 @@ public class Puzzle_1 : MonoBehaviour
         }
     }
 
-    private GameObject GetToyPrefabByName(string toyName)
+    private GameObject GetToyPrefabByName(string toyName) // Used to get the toyprefab so they can be used to spawn in the toys
     {
         foreach (var toyPrefab in toyPrefabs)
         {
@@ -116,7 +106,7 @@ public class Puzzle_1 : MonoBehaviour
     }
 
 
-private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy into position so it is placed on the pillar nicely a
+private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy into position so it is rotated nicely when placed on pillar
     {
         GameObject pillar = GameObject.Find("Pillar_" + pillarNumber); // Find the pillar object based on its associated number
 
@@ -129,7 +119,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         }
     }
 
-    private void HandleToyPlacedOnPillar(GameObject toy, int pillarNumber)
+    private void HandleToyPlacedOnPillar(GameObject toy, int pillarNumber) // Handles logic for when a toy enters the trigger on a pillar
     {
         string toyName = toy.name;
         int assignedNumber = GetAssignedNumber(toyName);
@@ -143,7 +133,6 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
                 if (kvp.Value == toyName && kvp.Key != pillarNumber)
                 {
                     previousPillar = kvp.Key;
-                    Debug.Log($"{toyName} is already placed on pillar {previousPillar}. Removing it from there.");
                     break;
                 }
             }
@@ -161,12 +150,10 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
             toyPlacementStatus[existingToy] = false;  // Mark the previous toy as not placed correctly
             currentToyPlacement.Remove(pillarNumber);
         }
+        
+        SnapToyToPillar(toy, pillarNumber); // Snap the toy to the pillar
 
-        // Snap the toy to the pillar
-        SnapToyToPillar(toy, pillarNumber);
-
-        // Update currentToyPlacement
-        currentToyPlacement[pillarNumber] = toyName;
+        currentToyPlacement[pillarNumber] = toyName; // Update currentToyPlacement
 
         // Update toyPlacementStatus
         if (assignedNumber == pillarNumber)
@@ -179,12 +166,8 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
             toyPlacementStatus[toyName] = false;
             Debug.Log($"{toyName} placed on the wrong pillar {pillarNumber}.");
         }
-
-        // Check puzzle completion
-        CheckPuzzleCompletition();
-
-        // Log current placements for debugging
-       // Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
+        
+        CheckPuzzleCompletition(); // Check puzzle completion
     }
 
 
@@ -204,25 +187,21 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         return false;
     }
 
-    public void RemoveToyFromPillar(int pillarNumber, string toyName)
+    public void RemoveToyFromPillar(int pillarNumber, string toyName) // Removes a toy from a pillar if it is taken out of the trigger
     {
         if (currentToyPlacement.ContainsKey(pillarNumber))
         {
             currentToyPlacement.Remove(pillarNumber);
-          //  Debug.Log($"Removed {toyName} from pillar {pillarNumber}.");
 
             // Update toyPlacementStatus
             toyPlacementStatus[toyName] = false;
 
             // Check puzzle completion again
             CheckPuzzleCompletition();
-
-            // Log current placements for debugging
-         //   Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
         }
     }
 
-    private string GetCurrentPlacementsString()
+    private string GetCurrentPlacementsString() // Gets current placement of toys
     {
         List<string> placements = new List<string>();
         foreach (var kvp in currentToyPlacement)
@@ -232,7 +211,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
         return string.Join(", ", placements);
     }
 
-    public void CheckPuzzleCompletition()
+    public void CheckPuzzleCompletition() // Checks whether puzzle has been completed
     {
         bool isComplete = true;
 
@@ -265,8 +244,6 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
          //   Debug.Log("Puzzle not yet complete.");
         }
 
-        // Log current placements for debugging
-       // Debug.Log("Current Pillar-Toy Placement: " + GetCurrentPlacementsString());
     }
 
 
