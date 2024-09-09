@@ -182,7 +182,7 @@ public class QuestManager : MonoBehaviour
 
         return false;
     }
-
+        
     private void PlayThoughtSound(string soundType)
     {
         if (!audioSource.isPlaying)
@@ -210,7 +210,6 @@ public class QuestManager : MonoBehaviour
 
     private void HandleHighlight(GameObject obj, float intensity, float range, bool highlight, float yPosOffset = 0f)
     {
-        Debug.Log("HIGHLIGHTING" + obj + " " + highlight);
         if (highlight)
         {
             if (!activeHighlights.ContainsKey(obj))

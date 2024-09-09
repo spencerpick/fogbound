@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 9f7977719c6a88b4d983fdc2232b43aa
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Another Danger - Demo
+  fontNames:
+  - Another Danger - Demo
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a7da59216079b1f46a8fecd4bbc5ddfa, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
