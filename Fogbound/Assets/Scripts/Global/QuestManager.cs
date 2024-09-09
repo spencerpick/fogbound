@@ -41,21 +41,42 @@ public class QuestManager : MonoBehaviour
     [SerializeField] private GameObject Pillar_6_Marker;
     [SerializeField] private GameObject Puzzle_1_Complete_Marker;
 
+    [SerializeField] private GameObject Alter;
+    [SerializeField] private GameObject FirstTargetObject;
+    [SerializeField] private GameObject Puzzle2Location;
+    [SerializeField] private GameObject Puzzle2Clues;
 
+
+    [SerializeField] private GameObject Puzzle2RewardLocation;
+    [SerializeField] private GameObject Puzzle3Location;
+    [SerializeField] private GameObject WeightLocation;
+    [SerializeField] private GameObject PressurePlate_1;
+    [SerializeField] private GameObject PressurePlate_2;
+    [SerializeField] private GameObject PressurePlate_3;
+    [SerializeField] private GameObject PressurePlate_4;
+    [SerializeField] private GameObject Puzzle_3Door;
+    [SerializeField] private GameObject Puzzle3RewardLocation;
 
     void Start()
     {
         Debug.Log("STARTING QUEST MANAGER");
         QuestStages = new List<string>();
+
         // Initalise the different quest stages
         QuestStages.Add("First-Ghost");
         QuestStages.Add("Find-Orphanage");
         QuestStages.Add("Look-Around-Orphanage");
         QuestStages.Add("Place-Toys");
-        QuestStages.Add("Read-note");
-        QuestStages.Add("Find-House");
-        QuestStages.Add("Reveal-Basement");
-        QuestStages.Add("Complete-Ritual");
+
+        QuestStages.Add("Examine Altar");
+        QuestStages.Add("Find first object");
+        QuestStages.Add("Puzzle 2 location");
+        QuestStages.Add("Locate clues");
+        QuestStages.Add("Take dropped item1 to alter");
+        QuestStages.Add("Find puzzle 3");
+        QuestStages.Add("Analyze puzzle 3");
+        QuestStages.Add("Locate dropped item");
+        QuestStages.Add("Take dropped item to alter");
 
         audioSource = GetComponent<AudioSource>();
         
@@ -166,7 +187,171 @@ public class QuestManager : MonoBehaviour
             HandleHighlight(Pillar_5_Marker.gameObject, 6f, 5f, true, 1.31f);
             HandleHighlight(Pillar_6_Marker.gameObject, 6f, 5f, true, 1.31f);
             HandleHighlight(Puzzle_1_Complete_Marker.gameObject, 6f, 3f, true, 1.31f);
+            if(Puzzle_1.GetComponent<Puzzle_1>().isComplete){
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = false;
 
+                HandleHighlight(Pillar_1_Marker.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Pillar_2_Marker.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Pillar_3_Marker.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Pillar_4_Marker.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Pillar_5_Marker.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Pillar_6_Marker.gameObject, 6f, 5f, false, 1.31f);
+                HandleHighlight(Puzzle_1_Complete_Marker.gameObject, 6f, 3f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Examine Altar")
+        {
+            UpdateThought("There's something strange about this altar... It feels like it's connected to everything going on here. I should take a closer look");
+
+            HandleHighlight(Alter, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(Alter))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(Alter, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Find first object")
+        {
+            UpdateThought("If the altar is important, then there must be something to place on it. I need to find them.");
+
+            HandleHighlight(FirstTargetObject, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(FirstTargetObject))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(FirstTargetObject, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Puzzle 2 location")
+        {
+            UpdateThought("On my way here, I noticed a strange glow coming from down the street. I wonder if it has something to do with this altar.");
+
+            HandleHighlight(Puzzle2Location, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(Puzzle2Location))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+                PlayThoughtSound("gasp");
+
+                HandleHighlight(Puzzle2Location, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Locate clues")
+        {
+            UpdateThought("There have to be clues around here to help solve this. I should look carefully for anything that might give me a hint.");
+
+            HandleHighlight(Puzzle2Clues, 6f, 5f, true, 1.31f);
+
+            if (Puzzle_2.GetComponent<Puzzle_2>().puzzleCompleted)
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = false;
+                HandleHighlight(Puzzle2Clues, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Take dropped item1 to alter")
+        {
+            UpdateThought("Look! This seems important, I should take it to the altar and see what happens");
+
+            HandleHighlight(Alter, 6f, 5f, true, 1.31f);
+
+            if (Alter.GetComponent<DetectFinalItems>().objectCount == 2)
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(Alter, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Find puzzle 3")
+        {
+            UpdateThought("There were odd looking shapes near Auto Parts. I should check them out.");
+
+            HandleHighlight(WeightLocation, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(WeightLocation))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(WeightLocation, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Analyze puzzle 3")
+        {
+            UpdateThought("Interesting... Numbered plates. I wonder what they go to.");
+
+            // Highlight pressure plates
+            HandleHighlight(PressurePlate_1, 6f, 5f, true, 1.31f);
+            HandleHighlight(PressurePlate_2, 6f, 5f, true, 1.31f);
+            HandleHighlight(PressurePlate_3, 6f, 5f, true, 1.31f);
+            HandleHighlight(PressurePlate_4, 6f, 5f, true, 1.31f);
+            HandleHighlight(Puzzle_3Door, 6f, 5f, true, 1.31f);
+
+            if (Puzzle_3.GetComponent<Puzzle_3>().puzzleCompleted){
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(PressurePlate_1, 6f, 5f, false, 1.31f);
+                HandleHighlight(PressurePlate_2, 6f, 5f, false, 1.31f);
+                HandleHighlight(PressurePlate_3, 6f, 5f, false, 1.31f);
+                HandleHighlight(PressurePlate_4, 6f, 5f, false, 1.31f);
+                HandleHighlight(Puzzle_3Door, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Locate dropped item")
+        {
+            UpdateThought("I heard something drop after solving the puzzle. That must be the next item I need.");
+
+            HandleHighlight(Puzzle3RewardLocation, 6f, 5f, true, 1.31f);
+
+            if (CheckDistToMarker(Puzzle3RewardLocation))
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(Puzzle3RewardLocation, 6f, 5f, false, 1.31f);
+            }
+        }
+
+        if (currentQuestStage == "Take dropped item to alter")
+        {
+            UpdateThought("This must be it, the final item. I need to place it on the altar and see what happens next.");
+
+            HandleHighlight(Alter, 6f, 5f, true, 1.31f);
+
+            /*if (Alter.GetComponent<DetectFinalItems>().objectCount == 3)
+            {
+                currentQuestNum += 1;
+                currentQuestStage = QuestStages[currentQuestNum];
+                thoughtSoundPlayed = true;
+
+                HandleHighlight(Puzzle3RewardLocation, 6f, 5f, false, 1.31f);
+            }*/
         }
 
     }

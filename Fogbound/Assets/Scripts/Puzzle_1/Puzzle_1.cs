@@ -5,7 +5,7 @@ using UnityEngine;
 public class Puzzle_1 : MonoBehaviour
 {
 
-    [SerializeField] bool CompletePuzzle = false; // Testing purposes
+    [SerializeField] public bool isComplete = false;
     [SerializeField] private Transform[] spawnPoints; 
     [SerializeField] private GameObject[] toyPrefabs;
 
@@ -38,10 +38,7 @@ public class Puzzle_1 : MonoBehaviour
 
     void Update()
     {
-        if (CompletePuzzle == true)
-        {
-
-        }
+        
     }
 
     private void GiveToysRandomNumbers() // Asign a unique pillar number to each toy
@@ -234,7 +231,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
 
     public void CheckPuzzleCompletition()
     {
-        bool isComplete = true;
+        isComplete = true;
 
         // Ensure all toys are placed correctly on their respective pillars
         foreach (var toyStatus in toyPlacementStatus.Values)
@@ -260,6 +257,7 @@ private void SnapToyToPillar(GameObject toy, int pillarNumber) // Snap a toy int
           //  Debug.Log("Puzzle complete!");
             EventManager.TriggerPuzzle_1_DoorOpen();
             EventManager.TriggerThoughtUpdate("PUZZLE COMPLETED HELL YEAH");
+
         }
         else
         {
